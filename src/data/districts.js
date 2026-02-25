@@ -1,0 +1,1 @@
+export const DISTRICTS = ['Sambalpur', 'Puri', 'Cuttack', 'Bhubaneswar', 'Keonjhar'];
