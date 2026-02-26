@@ -6,8 +6,6 @@ const {
   login,
   sendOTP,
   verifyOTP,
-  refreshToken,
-  logout,
 } = require("../controllers/authController");
 
 const router = express.Router();
@@ -21,8 +19,7 @@ router.post("/register", register);
 router.post("/login", login);
 router.post("/send-otp", sendOTP);
 router.post("/verify-otp", verifyOTP);
-router.post("/refresh", refreshToken);
-router.post("/logout", logout);
+
 
 /* ============================= */
 /* GOOGLE OAUTH ROUTES */
@@ -40,7 +37,7 @@ router.get(
   "/google/callback",
   passport.authenticate("google", {
     session: false,
-    failureRedirect: "/api/auth/google/failure",
+    failureRedirect: "http://localhost:5173/login",
   }),
   (req, res) => {
     const token = jwt.sign(
@@ -49,15 +46,9 @@ router.get(
       { expiresIn: "15m" }
     );
 
-    res.json({
-      message: "Google login successful",
-      user: {
-        id: req.user._id,
-        name: req.user.name,
-        email: req.user.email,
-      },
-      accessToken: token,
-    });
+    res.redirect(
+      `http://localhost:5173/oauth-success?token=${token}`
+    );
   }
 );
 

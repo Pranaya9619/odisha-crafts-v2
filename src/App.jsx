@@ -19,6 +19,7 @@ import Cart from "./pages/Cart/cart";
 import Wishlist from "./pages/Wishlist/Wishlist";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
+import OAuthSuccess from "./pages/OAuthSuccess";
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -52,7 +53,7 @@ const App = () => {
             <Route path="/wishlist" element={<Wishlist />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
-
+            <Route path="/oauth-success" element={<OAuthSuccess />} />
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>
         </AnimatePresence>

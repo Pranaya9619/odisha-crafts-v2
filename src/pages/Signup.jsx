@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import InputField from "../components/ui/InputField";
 import PageTransition from "../components/layout/PageTransition";
+import { FcGoogle } from "react-icons/fc";
 
 const Signup = () => {
   const navigate = useNavigate();
@@ -133,6 +134,26 @@ const Signup = () => {
               className="bg-orange-600 hover:bg-orange-700 text-white py-3 rounded-xl font-semibold transition shadow-lg hover:shadow-xl"
             >
               Sign Up
+            </motion.button>
+
+            {/* Divider */}
+            <div className="flex items-center gap-3 my-2">
+              <div className="flex-1 h-px bg-gray-300"></div>
+              <span className="text-xs text-gray-400">OR</span>
+              <div className="flex-1 h-px bg-gray-300"></div>
+            </div>
+
+            <motion.button
+              whileHover={{ y: -3 }}
+              whileTap={{ scale: 0.97 }}
+              type="button"
+              onClick={() => {
+                window.location.href = "http://localhost:5000/api/auth/google";
+              }}
+              className="flex items-center justify-center gap-3 border border-gray-300 py-3 rounded-xl font-medium hover:bg-gray-50 transition shadow-sm"
+            >
+              <FcGoogle size={20} />
+              Continue with Google
             </motion.button>
           </form>
 

@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import InputField from "../components/ui/InputField";
 import { LogIn } from "lucide-react";
 import PageTransition from "../components/layout/PageTransition";
+import { FcGoogle } from "react-icons/fc";
 
 const Login = () => {
   const [formData, setFormData] = useState({
@@ -29,6 +30,8 @@ const Login = () => {
     // Fake success login
     navigate("/");
   };
+
+
 
   return (
     <PageTransition>
@@ -87,6 +90,27 @@ const Login = () => {
               <LogIn size={18} />
               Login
             </motion.button>
+
+              {/* Divider */}
+              <div className="flex items-center gap-3 my-4">
+                <div className="flex-1 h-px bg-gray-300"></div>
+                <span className="text-xs text-gray-400">OR</span>
+                <div className="flex-1 h-px bg-gray-300"></div>
+              </div>
+
+              {/* Google Login Button */}
+              <motion.button
+                whileHover={{ y: -3 }}
+                whileTap={{ scale: 0.97 }}
+                type="button"
+                onClick={() => {
+                  window.location.href = "http://localhost:5000/api/auth/google";
+                }}
+                className="flex items-center justify-center gap-3 border border-gray-300 py-3 rounded-xl font-medium hover:bg-gray-50 transition shadow-sm"
+              >
+                <FcGoogle size={20} />
+                Continue with Google
+              </motion.button>
           </form>
 
           {/* Footer */}
