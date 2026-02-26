@@ -1,12 +1,13 @@
 import React from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { ShoppingBag, Heart } from "lucide-react";
 import { useStore } from "../../context/StoreContext";
+import { useAuth } from "../../context/AuthContext";
 
 const Navbar = () => {
   const navigate = useNavigate();
-  const location = useLocation();
   const { cartCount, wishlist } = useStore();
+  const { user, logout } = useAuth();
 
   return (
     <nav className="bg-white shadow-sm border-b">
@@ -21,24 +22,26 @@ const Navbar = () => {
 
         <div className="flex gap-8 items-center">
 
-          <button
-            onClick={() => navigate("/login")}
-            className="px-4 py-2 border border-orange-600 text-orange-600 rounded-lg hover:bg-orange-600 hover:text-white transition"
-          >
-            Login
-          </button>
-          
-          <button onClick={() => navigate("/shop")}>
-            Shop
-          </button>
-          
-          <button onClick={() => navigate("/artisans")}>
-            Artisans
-          </button>
+          {/* 🔐 Auth Button */}
+          {user ? (
+            <button
+              onClick={logout}
+              className="px-4 py-2 border border-red-500 text-red-500 rounded-lg hover:bg-red-500 hover:text-white transition"
+            >
+              Logout
+            </button>
+          ) : (
+            <button
+              onClick={() => navigate("/login")}
+              className="px-4 py-2 border border-orange-600 text-orange-600 rounded-lg hover:bg-orange-600 hover:text-white transition"
+            >
+              Login
+            </button>
+          )}
 
-          <button onClick={() => navigate("/impact")}>
-            Impact
-          </button>
+          <button onClick={() => navigate("/shop")}>Shop</button>
+          <button onClick={() => navigate("/artisans")}>Artisans</button>
+          <button onClick={() => navigate("/impact")}>Impact</button>
 
           <button onClick={() => navigate("/wishlist")} className="relative">
             <Heart size={20} />
@@ -57,6 +60,7 @@ const Navbar = () => {
               </span>
             )}
           </button>
+
         </div>
       </div>
     </nav>
