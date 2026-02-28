@@ -11,6 +11,10 @@ const Footer = () => {
     navigate(query ? `/shop?${query}` : "/shop");
   };
 
+  const goToSeller = () => {
+    navigate("/seller-register");
+  };
+
   const handleNewsletterSubmit = (e) => {
     e.preventDefault();
 
@@ -26,7 +30,10 @@ const Footer = () => {
 
   return (
     <footer className="bg-stone-950 text-stone-400 py-16 border-t border-stone-900">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-4 gap-12">
+      
+      {/* ✅ RESPONSIVE GRID FIXED */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 
+        grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-12">
 
         {/* Brand */}
         <div>
@@ -93,6 +100,8 @@ const Footer = () => {
           </ul>
         </div>
 
+        
+
         {/* Newsletter */}
         <div>
           <h3 className="text-white font-bold mb-4 uppercase text-xs tracking-wider">
@@ -119,6 +128,26 @@ const Footer = () => {
             </button>
           </form>
         </div>
+
+        {/* ✅ Sell on OdishaCrafts */}
+        <div>
+          <h3 className="text-white font-bold mb-4 uppercase text-xs tracking-wider">
+            Sell on OdishaCrafts
+          </h3>
+
+          <p className="text-sm mb-4">
+            Join our artisan community and grow your business with us.
+          </p>
+          <button 
+          onClick={goToSeller}
+          className="ml-auto block bg-orange-700 text-white px-5 py-2 rounded-md text-sm font-medium hover:bg-orange-600 transition-colors"
+          >
+            Join us
+            </button>
+
+        
+        </div>
+
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-16 pt-8 border-t border-stone-900 text-center text-xs">
