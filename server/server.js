@@ -1,7 +1,6 @@
 require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
-const session = require("express-session");
 const passport = require("passport");
 const connectDB = require("./config/db");
 const productRoutes = require("./routes/productRoutes");
@@ -14,35 +13,23 @@ require("./config/passport");
 connectDB();
 
 const app = express();
-
-app.use(cors());
-app.use(express.json());
-
-app.use(session({
-  secret: process.env.SESSION_SECRET,
-  resave: false,
-  saveUninitialized: false,
-  cookie: {
-    secure: false // true only in production with HTTPS
-  }
-}));
-
-app.use(passport.initialize());
-app.use(passport.session());
-
-app.use("/api/auth", require("./routes/authRoutes"));
-
-app.use("/api/products", productRoutes);
-app.use("/api/artisans", artisanRoutes);
-app.use("/api/orders", orderRoutes);
-app.use(cookieParser());
-
 app.use(
   cors({
     origin: "http://localhost:5173",
     credentials: true,
   })
 );
+
+app.use(express.json());
+app.use(cookieParser());
+app.use(passport.initialize());
+
+app.use("/api/auth", require("./routes/authRoutes"));
+app.use("/api/products", productRoutes);
+app.use("/api/artisans", artisanRoutes);
+app.use("/api/orders", orderRoutes);
+
+
 
 app.get("/", (req, res) => {
   res.send("OdishaCrafts API Running...");
