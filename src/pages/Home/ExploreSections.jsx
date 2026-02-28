@@ -1,15 +1,14 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { MapPin, ChevronRight, ShieldCheck, Users } from "lucide-react";
 import { motion } from "framer-motion";
-import { CATEGORIES } from "../../data/categories";
-import { DISTRICTS } from "../../data/districts";
+import { useNavigate } from "react-router-dom";
+import API from "../../services/api";
+import { Scissors, Truck } from "lucide-react";
 
 const containerVariants = {
   hidden: {},
   show: {
-    transition: {
-      staggerChildren: 0.08,
-    },
+    transition: { staggerChildren: 0.08 },
   },
 };
 
@@ -18,14 +17,43 @@ const fadeUp = {
   show: { opacity: 1, y: 0 },
 };
 
-const ExploreSections = ({ navigate }) => {
-  const safeNavigate = (page, filter) => {
-    if (navigate) navigate(page, filter);
-  };
+const ExploreSections = () => {
+  const navigate = useNavigate();
+  const [categories, setCategories] = useState([]);
+  const [districts, setDistricts] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [catRes, distRes] = await Promise.all([
+          API.get("/categories"),
+          API.get("/districts"),
+        ]);
+
+        setCategories(catRes.data || []);
+        setDistricts(distRes.data || []);
+      } catch (error) {
+        console.error("ExploreSections fetch error:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  if (loading) {
+    return (
+      <section className="py-20 bg-stone-50 text-center">
+        <p className="text-stone-600">Loading exploration magic...</p>
+      </section>
+    );
+  }
 
   return (
     <section className="py-20 bg-stone-50 overflow-hidden">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto px-4">
 
         {/* Explore by Craft */}
         <motion.div
@@ -48,25 +76,26 @@ const ExploreSections = ({ navigate }) => {
           viewport={{ once: true }}
           className="grid grid-cols-2 md:grid-cols-5 gap-6"
         >
-          {CATEGORIES.map((cat) => (
+          {categories.map((cat) => (
             <motion.div
-              key={cat.id}
+              key={cat._id}
               variants={fadeUp}
               whileHover={{ y: -6 }}
-              transition={{ duration: 0.3 }}
-              onClick={() => safeNavigate("shop", { category: cat.name })}
-              className="relative group cursor-pointer rounded-xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-300"
+              onClick={() =>
+                navigate(`/shop?category=${encodeURIComponent(cat.name)}`)
+              }
+              className="relative group cursor-pointer rounded-xl overflow-hidden shadow-sm hover:shadow-2xl transition"
             >
               <img
-                src={cat.icon}
+                src={cat.icon || "/placeholder.jpg"}
                 alt={cat.name}
                 className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
               />
 
-              <div className="absolute inset-0 bg-black/40 group-hover:bg-black/55 transition-all duration-300"></div>
+              <div className="absolute inset-0 bg-black/40 group-hover:bg-black/55 transition"></div>
 
               <div className="relative z-10 flex items-center justify-center h-40">
-                <h3 className="text-white font-semibold text-lg text-center px-2 tracking-wide">
+                <h3 className="text-white font-semibold text-lg text-center px-2">
                   {cat.name}
                 </h3>
               </div>
@@ -93,36 +122,28 @@ const ExploreSections = ({ navigate }) => {
                 Take a journey through the cultural map of Odisha.
               </p>
 
-              <motion.ul
-                variants={containerVariants}
-                initial="hidden"
-                whileInView="show"
-                viewport={{ once: true }}
-                className="space-y-2 mb-8"
-              >
-                {DISTRICTS.map((district) => (
-                  <motion.li
-                    key={district}
-                    variants={fadeUp}
-                    onClick={() => safeNavigate("shop", { district })}
-                    whileHover={{ x: 4 }}
-                    className="flex items-center text-stone-800 font-medium cursor-pointer hover:text-orange-700 transition-colors"
+              <ul className="space-y-2 mb-8">
+                {districts.map((district) => (
+                  <li
+                    key={district._id}
+                    onClick={() =>
+                      navigate(`/shop?district=${encodeURIComponent(district.name)}`)
+                    }
+                    className="flex items-center text-stone-800 font-medium cursor-pointer hover:text-orange-700"
                   >
                     <MapPin size={16} className="text-orange-700 mr-2" />
-                    {district}
-                  </motion.li>
+                    {district.name}
+                  </li>
                 ))}
-              </motion.ul>
+              </ul>
 
               <button
-                onClick={() => safeNavigate("shop")}
+                onClick={() => navigate("/shop")}
                 className="text-orange-800 font-bold hover:underline flex items-center"
               >
                 View All Districts <ChevronRight size={18} />
               </button>
             </div>
-
-            <div className="absolute -bottom-20 -right-20 w-64 h-64 bg-orange-200 rounded-full opacity-50"></div>
           </motion.div>
 
           {/* Trust Section */}
@@ -135,7 +156,7 @@ const ExploreSections = ({ navigate }) => {
           >
             <div className="flex items-start gap-4">
               <div className="p-3 bg-stone-900 text-white rounded-lg">
-                <ShieldCheck size={24} />
+                <ShieldCheck size={22} />
               </div>
               <div>
                 <h4 className="text-lg font-bold text-stone-900">
@@ -157,6 +178,33 @@ const ExploreSections = ({ navigate }) => {
                 </h4>
                 <p className="text-stone-600 text-sm mt-1">
                   Earnings go directly to artisan clusters.
+                </p>
+              </div>
+            </div>
+            <div className="flex gap-4">
+              <div className="bg-black text-white p-4 rounded-xl">
+                <Scissors size={22} />
+              </div>
+              <div>
+                <h3 className="font-semibold text-lg">
+                  Handmade with Tradition
+                </h3>
+                <p className="text-gray-600">
+                  Crafted using time-honored techniques passed down through generations.
+                </p>
+              </div>
+            </div>
+
+            <div className="flex gap-4">
+              <div className="bg-black text-white p-4 rounded-xl">
+                <Truck size={22} />
+              </div>
+              <div>
+                <h3 className="font-semibold text-lg">
+                  Safe & Reliable Delivery
+                </h3>
+                <p className="text-gray-600">
+                  Carefully packed and shipped with protection for delicate artwork.
                 </p>
               </div>
             </div>

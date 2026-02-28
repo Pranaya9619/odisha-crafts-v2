@@ -52,7 +52,7 @@ exports.login = async (req, res) => {
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
       secure: false, // true in production
-      sameSite: "strict",
+      sameSite: "lax",
       path: "/",
     });
 
@@ -121,7 +121,7 @@ exports.logout = (req, res) => {
   res.clearCookie("refreshToken", {
     httpOnly: true,
     secure: false,
-    sameSite: "strict",
+    sameSite: "lax",
     path: "/",
   });
 
