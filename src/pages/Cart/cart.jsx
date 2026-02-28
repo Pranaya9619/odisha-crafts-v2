@@ -122,13 +122,13 @@ const Cart = () => {
           >
             {cart.map((item) => (
               <motion.div
-                key={item.id}
+                key={item._id}
                 variants={itemVariants}
                 whileHover={{ y: -3 }}
                 className="bg-white p-6 rounded-xl shadow hover:shadow-lg transition-all duration-300 flex flex-col md:flex-row md:items-center justify-between gap-6"
               >
                 <div
-                  onClick={() => navigate(`/product/${item.id}`)}
+                  onClick={() => navigate(`/product/${item._id}`)}
                   className="flex items-center gap-4 cursor-pointer"
                 >
                   {item.image && (
@@ -150,7 +150,7 @@ const Cart = () => {
 
                 <div className="flex items-center gap-4">
                   <button
-                    onClick={() => decreaseQty(item.id)}
+                    onClick={() => decreaseQty(item._id)}
                     className="w-8 h-8 border rounded-md hover:bg-stone-100 transition"
                   >
                     -
@@ -159,7 +159,7 @@ const Cart = () => {
                   <span className="font-medium">{item.quantity}</span>
 
                   <button
-                    onClick={() => increaseQty(item.id)}
+                    onClick={() => increaseQty(item._id)}
                     className="w-8 h-8 border rounded-md hover:bg-stone-100 transition"
                   >
                     +
@@ -167,7 +167,7 @@ const Cart = () => {
                 </div>
 
                 <button
-                  onClick={() => removeFromCart(item.id)}
+                  onClick={() => removeFromCart(item._id)}
                   className="text-red-500 hover:underline transition"
                 >
                   Remove

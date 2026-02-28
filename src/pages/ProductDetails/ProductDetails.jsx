@@ -29,6 +29,37 @@ const ProductDetails = () => {
   const [newReview, setNewReview] = useState("");
   const [rating, setRating] = useState(0);
 
+  const handleWishlist = () => {
+    if (!user) {
+      localStorage.setItem(
+        "pendingWishlist",
+        JSON.stringify(product)
+      );
+
+      navigate("/login", {
+        state: { from: `/product/${product._id}` },
+      });
+
+      return;
+    }
+
+    toggleWishlist(product);
+  };
+
+  const handleAddToCart = () => {
+    if (!user) {
+      localStorage.setItem("pendingCart", JSON.stringify(product));
+
+      navigate("/login", {
+        state: { from: `/product/${product._id}` },
+      });
+
+      return;
+    }
+
+    addToCart(product);
+  };
+
   /* ================= FETCH PRODUCT ================= */
 
   useEffect(() => {
@@ -81,7 +112,8 @@ const ProductDetails = () => {
   /* ================= DERIVED VALUES ================= */
 
   const isWishlisted =
-    product && wishlist.some((w) => w._id === product._id);
+    product &&
+    wishlist?.some((item) => item?._id === product?._id);
 
   const averageRating = useMemo(() => {
     if (!reviews.length) return 0;
@@ -190,16 +222,29 @@ const ProductDetails = () => {
             </p>
 
             <div className="flex gap-4 mb-10">
+
+              {/* ADD TO CART */}
               <button
-                // onClick={() => addToCart(product)}
+                onClick={handleAddToCart}
                 className="flex-1 bg-stone-900 text-white py-3 rounded-lg flex items-center justify-center gap-2"
               >
                 <ShoppingBag size={20} />
                 Add to Cart
               </button>
 
+              {/* WISHLIST */}
               <button
-                onClick={() => toggleWishlist(product)}
+                onClick={() => {
+                  if (!user) {
+                    localStorage.setItem("pendingWishlist", JSON.stringify(product));
+                    navigate("/login", {
+                      state: { from: `/product/${product._id}` },
+                    });
+                    return;
+                  }
+
+                  toggleWishlist(product);
+                }}
                 className={`w-14 h-14 border rounded-lg flex items-center justify-center ${
                   isWishlisted
                     ? "text-red-500 border-red-500"
@@ -208,6 +253,7 @@ const ProductDetails = () => {
               >
                 <Heart size={24} />
               </button>
+
             </div>
 
             <button

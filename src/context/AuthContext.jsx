@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import API, { setAccessToken } from "../services/api";
 import axios from "axios";
+import { useStore } from "./StoreContext";
 
 const AuthContext = createContext();
 
@@ -8,7 +9,9 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // 🔥 Auto refresh on app load
+  const { clearStore } = useStore();
+  /* ================= AUTO REFRESH ================= */
+
   useEffect(() => {
     const refreshAuth = async () => {
       try {
@@ -16,7 +19,6 @@ export const AuthProvider = ({ children }) => {
 
         setAccessToken(res.data.accessToken);
 
-        // Optional: fetch current user profile if needed
         const profile = await API.get("/auth/me");
         setUser(profile.data);
       } catch (err) {
@@ -29,7 +31,8 @@ export const AuthProvider = ({ children }) => {
     refreshAuth();
   }, []);
 
-  // 🔥 Login
+  /* ================= LOGIN ================= */
+
   const login = async (email, password) => {
     const res = await API.post("/auth/login", {
       email,
@@ -40,26 +43,27 @@ export const AuthProvider = ({ children }) => {
     setUser(res.data.user);
   };
 
-  // 🔥 Logout
-  const logout = async () => {
-    console.log("Logout triggered");
+  /* ================= LOGOUT ================= */
 
+  const logout = async () => {
     try {
       await axios.post(
         "http://localhost:5000/api/auth/logout",
         {},
         { withCredentials: true }
       );
-    } catch (err) {
-      console.log("Logout error ignored:", err);
-    }
+    } catch (err) {}
 
     setAccessToken(null);
     setUser(null);
+
+    clearStore(); // 👈 clears cart + wishlist instantly
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, loading, setUser }}>
+    <AuthContext.Provider
+      value={{ user, login, logout, loading, setUser }}
+    >
       {!loading && children}
     </AuthContext.Provider>
   );
