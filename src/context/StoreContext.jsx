@@ -3,9 +3,26 @@ import React, { createContext, useContext, useMemo, useState } from "react";
 const StoreContext = createContext(null);
 
 export const StoreProvider = ({ children }) => {
+  // Cart & Wishlist
   const [cart, setCart] = useState([]);
   const [wishlist, setWishlist] = useState([]);
 
+  // Orders
+  const [orders, setOrders] = useState([]);
+  const addOrder = (order) => setOrders((prev) => [...prev, order]);
+
+  // Addresses
+  const [addresses, setAddresses] = useState([]);
+  const addAddress = (addr) =>
+    setAddresses((prev) => (prev.includes(addr) ? prev : [...prev, addr]));
+  const editAddress = (index, newAddr) =>
+    setAddresses((prev) =>
+      prev.map((addr, i) => (i === index ? newAddr : addr))
+    );
+  const removeAddress = (index) =>
+    setAddresses((prev) => prev.filter((_, i) => i !== index));
+
+  // Cart operations
   const addToCart = (product) => {
     setCart((prev) => {
       const exists = prev.find((item) => item.id === product.id);
@@ -34,13 +51,14 @@ export const StoreProvider = ({ children }) => {
     setCart((prev) =>
       prev
         .map((item) =>
-          item.id === id
-            ? { ...item, quantity: item.quantity - 1 }
-            : item
+          item.id === id ? { ...item, quantity: item.quantity - 1 } : item
         )
         .filter((item) => item.quantity > 0)
     );
 
+  const clearCart = () => setCart([]);
+
+  // Wishlist toggle
   const toggleWishlist = (product) => {
     setWishlist((prev) => {
       const exists = prev.find((item) => item.id === product.id);
@@ -50,17 +68,14 @@ export const StoreProvider = ({ children }) => {
     });
   };
 
+  // Memoized values
   const cartCount = useMemo(
     () => cart.reduce((acc, item) => acc + item.quantity, 0),
     [cart]
   );
 
   const cartTotal = useMemo(
-    () =>
-      cart.reduce(
-        (acc, item) => acc + item.price * item.quantity,
-        0
-      ),
+    () => cart.reduce((acc, item) => acc + item.price * item.quantity, 0),
     [cart]
   );
 
@@ -69,6 +84,8 @@ export const StoreProvider = ({ children }) => {
       value={{
         cart,
         wishlist,
+        orders,
+        addresses,
         cartCount,
         cartTotal,
         addToCart,
@@ -76,6 +93,11 @@ export const StoreProvider = ({ children }) => {
         increaseQty,
         decreaseQty,
         toggleWishlist,
+        clearCart,
+        addOrder,
+        addAddress,
+        editAddress,
+        removeAddress,
       }}
     >
       {children}

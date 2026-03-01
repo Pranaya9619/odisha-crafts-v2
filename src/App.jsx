@@ -17,9 +17,11 @@ import Impact from "./pages/Impact/Impact";
 import Artisans from "./pages/Artisans/Artisans";
 import Cart from "./pages/Cart/cart";
 import Wishlist from "./pages/Wishlist/Wishlist";
+import MyAccount from "./pages/MyAccount/MyAccount";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import OAuthSuccess from "./pages/oAuthSuccess";
+import Checkout from "./pages/Checkout";
 
 import SellerRegister from "./pages/SellerRegister/SellerRegister";
 //import SellerLogin from "./pages/SellerHome/SellerLogin";
@@ -63,15 +65,22 @@ const App = () => {
             <Route path="/impact" element={<Impact />} />
             <Route path="/artisans" element={<Artisans />} />
 
+             {/* Cart and Checkout */}
             <Route
               path="/cart"
               element={user ? <Cart /> : <Navigate to="/login" />}
             />
+            <Route
+              path="/checkout"
+              element={user ? <Checkout /> : <Navigate to="/login" />}
+            />
+            <Route path="/my-account" element={user ? <MyAccount /> : <Navigate to="/login" />} />
 
             <Route path="/wishlist" element={<Wishlist />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
             <Route path="/oauth-success" element={<OAuthSuccess />} />
+            
 
             {/* SELLER ROUTES */}
             <Route path="/seller-register" element={<SellerRegister />} />
@@ -85,6 +94,7 @@ const App = () => {
                   : <Navigate to="/seller-login" />
               }
             />
+            
 
             {/* 404 */}
             <Route path="*" element={<Navigate to="/" />} />

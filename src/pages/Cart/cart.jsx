@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { useStore } from "../../context/StoreContext";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
@@ -6,11 +6,7 @@ import PageTransition from "../../components/layout/PageTransition";
 
 const containerVariants = {
   hidden: {},
-  show: {
-    transition: {
-      staggerChildren: 0.1,
-    },
-  },
+  show: { transition: { staggerChildren: 0.1 } },
 };
 
 const itemVariants = {
@@ -19,12 +15,8 @@ const itemVariants = {
 };
 
 const Cart = () => {
-  const { cart = [], removeFromCart, increaseQty, decreaseQty } = useStore();
+  const { cart, removeFromCart, increaseQty, decreaseQty } = useStore();
   const navigate = useNavigate();
-
-  const [showCheckout, setShowCheckout] = useState(false);
-  const [paymentMethod, setPaymentMethod] = useState("upi");
-  const [loading, setLoading] = useState(false);
 
   const subtotal = cart.reduce((acc, item) => {
     const price = Number(item.price) || 0;
@@ -35,52 +27,7 @@ const Cart = () => {
   const gst = subtotal * 0.05;
   const shipping = subtotal > 1000 ? 0 : 50;
   const total = subtotal + gst + shipping;
-
-  const handlePlaceOrder = async () => {
-    if (paymentMethod === "cod") {
-      alert("🎉 Order placed with Cash on Delivery!");
-      return;
-    }
-
-    try {
-      setLoading(true);
-
-      const response = await fetch("http://localhost:5000/create-order", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ amount: total }),
-      });
-
-      const order = await response.json();
-
-      const options = {
-        key: "YOUR_RAZORPAY_KEY_ID",
-        amount: order.amount,
-        currency: "INR",
-        name: "OdishaCrafts",
-        description: "Secure Artisan Checkout",
-        order_id: order.id,
-        handler: function (response) {
-          alert("✅ Payment Successful!");
-          console.log(response);
-        },
-        theme: {
-          color: "#f97316",
-        },
-      };
-
-      const rzp = new window.Razorpay(options);
-      rzp.open();
-
-      setLoading(false);
-    } catch (error) {
-      console.error("Payment failed:", error);
-      alert("❌ Payment Failed");
-      setLoading(false);
-    }
-  };
+  const savings = subtotal > 1000 ? 50 : 0;
 
   if (!cart || cart.length === 0) {
     return (
@@ -112,8 +59,7 @@ const Cart = () => {
         </motion.h1>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          
-          {/* LEFT SIDE */}
+          {/* LEFT SIDE - Cart Items */}
           <motion.div
             variants={containerVariants}
             initial="hidden"
@@ -155,9 +101,7 @@ const Cart = () => {
                   >
                     -
                   </button>
-
                   <span className="font-medium">{item.quantity}</span>
-
                   <button
                     onClick={() => increaseQty(item.id)}
                     className="w-8 h-8 border rounded-md hover:bg-stone-100 transition"
@@ -176,79 +120,57 @@ const Cart = () => {
             ))}
           </motion.div>
 
-          {/* RIGHT SIDE */}
+          {/* RIGHT SIDE - Price Summary / Pro UX */}
           <motion.div
             initial={{ opacity: 0, x: 40 }}
             animate={{ opacity: 1, x: 0 }}
-            className="bg-white rounded-xl shadow p-6 h-fit"
+            className="bg-white rounded-xl shadow p-6 h-fit space-y-4"
           >
-            <h2 className="text-xl font-semibold mb-4">Price Details</h2>
+            <h2 className="text-xl font-semibold mb-2">Price Summary</h2>
 
-            <div className="flex justify-between mb-2">
+            {/* Subtotal */}
+            <div className="flex justify-between text-stone-700">
               <span>Subtotal</span>
               <span>₹{subtotal.toLocaleString()}</span>
             </div>
 
-            <div className="flex justify-between mb-2">
+            {/* GST */}
+            <div className="flex justify-between text-stone-700">
               <span>GST (5%)</span>
               <span>₹{gst.toLocaleString()}</span>
             </div>
 
-            <div className="flex justify-between mb-2">
+            {/* Shipping */}
+            <div className="flex justify-between text-stone-700">
               <span>Shipping</span>
-              <span>
-                {shipping === 0 ? "Free" : `₹${shipping.toLocaleString()}`}
+              <span className={shipping === 0 ? "text-green-600 font-semibold" : ""}>
+                {shipping === 0 ? "Free 🚚" : `₹${shipping.toLocaleString()}`}
               </span>
             </div>
 
-            <hr className="my-4" />
+            {/* Savings */}
+            {savings > 0 && (
+              <div className="flex justify-between text-green-600 font-semibold">
+                <span>You're saving</span>
+                <span>₹{savings.toLocaleString()}</span>
+              </div>
+            )}
 
+            <hr className="my-2" />
+
+            {/* Total */}
             <div className="flex justify-between font-bold text-lg">
               <span>Total</span>
               <span>₹{total.toLocaleString()}</span>
             </div>
 
-            {!showCheckout && (
-              <button
-                onClick={() => setShowCheckout(true)}
-                className="mt-6 w-full bg-orange-600 text-white py-3 rounded-md hover:bg-orange-700 transition"
-              >
-                Checkout
-              </button>
-            )}
-
-            {showCheckout && (
-              <div className="mt-6 space-y-4">
-                <h3 className="font-semibold">Payment Method</h3>
-
-                {["upi", "credit/debit", "cod"].map((method) => (
-                  <label
-                    key={method}
-                    className="flex items-center gap-2 text-sm cursor-pointer"
-                  >
-                    <input
-                      type="radio"
-                      value={method}
-                      checked={paymentMethod === method}
-                      onChange={(e) => setPaymentMethod(e.target.value)}
-                    />
-                    {method === "upi"
-                      ? "UPI / Razorpay"
-                      : method === "credit/debit"
-                      ? "Credit / Debit Cards"
-                      : "Cash on Delivery"}
-                  </label>
-                ))}
-
-                <button
-                  onClick={handlePlaceOrder}
-                  disabled={loading}
-                  className="w-full bg-green-600 text-white py-3 rounded-md hover:bg-green-700 transition font-medium mt-4"
-                >
-                  {loading ? "Processing..." : "Place Order"}
-                </button>
-              </div>
-            )}
+            {/* Checkout */}
+            <button
+               onClick={() => navigate("/checkout")}
+              className="mt-4 w-full bg-orange-600 text-white py-3 rounded-md hover:bg-orange-700 transition text-lg font-medium"
+            >
+              Proceed to Checkout
+            </button>
           </motion.div>
         </div>
       </div>

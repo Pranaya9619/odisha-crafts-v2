@@ -60,6 +60,7 @@ const Navbar = () => {
               </span>
             )}
           </button>
+          <button onClick={() => navigate("/my-account")}> Me </button>
 
         </div>
       </div>
