@@ -15,7 +15,7 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const refreshAuth = async () => {
       try {
-        const res = await API.post("/auth/refresh");
+        const res = await API.post("/auth/refresh", {}, { withCredentials: true });
 
         setAccessToken(res.data.accessToken);
 
@@ -39,8 +39,12 @@ export const AuthProvider = ({ children }) => {
       password,
     });
 
+    // 🔥 Store access token properly
     setAccessToken(res.data.accessToken);
+
     setUser(res.data.user);
+
+    return res.data;
   };
 
   /* ================= LOGOUT ================= */

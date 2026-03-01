@@ -14,32 +14,59 @@ const generateRefreshToken = (id) =>
   });
 
 exports.register = async (req, res) => {
-  const { name, email, password } = req.body;
+  try {
+    const { name, email, password } = req.body;
 
-  const userExists = await User.findOne({ email });
-  if (userExists) return res.status(400).json({ message: "User exists" });
+    const userExists = await User.findOne({ email });
+    if (userExists)
+      return res.status(400).json({ message: "User exists" });
 
-  const hashedPassword = await bcrypt.hash(password, 10);
+    const user = await User.create({
+      name,
+      email,
+      password, // 🔥 pass raw password
+    });
 
-  const user = await User.create({
-    name,
-    email,
-    password: hashedPassword,
-  });
+    const accessToken = generateAccessToken(user._id);
+    const refreshToken = generateRefreshToken(user._id);
 
-  res.json({
-    _id: user._id,
-    token: generateToken(user._id),
-  });
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      secure: false,
+      sameSite: "lax",
+      path: "/",
+    });
+
+    res.status(201).json({
+      accessToken,
+      user: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+      },
+    });
+
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
 };
 
 exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
+    console.log("LOGIN ATTEMPT EMAIL:", email);
+    const user = await User.findOne({ email }).select("+password");
 
-    const user = await User.findOne({ email });
-    if (!user)
-      return res.status(400).json({ message: "Invalid credentials" });
+    console.log("USER FOUND:", user);
+    console.log("PASSWORD FIELD:", user?.password);
+    console.log("TYPE OF PASSWORD:", typeof user?.password);
+    // if (!user)
+    //   return res.status(400).json({ message: "Invalid credentials" });
+    if (!user || !user.password) {
+      return res.status(400).json({ 
+        message: "Please login using Google for this account" 
+      });
+    }
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch)
@@ -65,6 +92,7 @@ exports.login = async (req, res) => {
       },
     });
   } catch (err) {
+    console.error("LOGIN ERROR:", err);
     res.status(500).json({ message: err.message });
   }
 };
@@ -89,20 +117,45 @@ exports.sendOTP = async (req, res) => {
 };
 
 exports.verifyOTP = async (req, res) => {
-  const { email, otp } = req.body;
+  try {
+    const { email, otp } = req.body;
 
-  const user = await User.findOne({ email });
+    const user = await User.findOne({ email });
 
-  if (!user || user.otp !== otp || user.otpExpires < Date.now())
-    return res.status(400).json({ message: "Invalid OTP" });
+    if (!user || user.otp !== otp || user.otpExpires < Date.now()) {
+      return res.status(400).json({ message: "Invalid OTP" });
+    }
 
-  res.json({
-    token: generateToken(user._id),
-  });
+    const accessToken = generateAccessToken(user._id);
+    const refreshToken = generateRefreshToken(user._id);
+
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      secure: false,
+      sameSite: "lax",
+      path: "/",
+    });
+
+    res.json({
+      accessToken,
+      user: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+      },
+    });
+
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
 };
 
 exports.refreshToken = async (req, res) => {
-  const token = req.cookies.refreshToken;
+  const token = req.cookies?.refreshToken;
+
+  if (!token) {
+    return res.status(401).json({ message: "No refresh token" });
+  }
 
   if (!token) return res.status(401).json({ message: "No refresh token" });
 

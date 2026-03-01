@@ -5,9 +5,12 @@ import { motion } from "framer-motion";
 import InputField from "../components/ui/InputField";
 import PageTransition from "../components/layout/PageTransition";
 import { FcGoogle } from "react-icons/fc";
+import API, { setAccessToken } from "../services/api";
+import { useAuth } from "../context/AuthContext";
 
 const Signup = () => {
   const navigate = useNavigate();
+  const { setUser } = useAuth();
 
   const [formData, setFormData] = useState({
     name: "",
@@ -33,7 +36,7 @@ const Signup = () => {
     return "";
   }, [formData.password]);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
 
@@ -42,10 +45,22 @@ const Signup = () => {
       return;
     }
 
-    console.log("Signup Data:", formData);
+    try {
+      const res = await API.post("/auth/register", {
+        name: formData.name,
+        email: formData.email,
+        password: formData.password,
+      });
 
-    // Fake success
-    navigate("/login");
+      // 🔥 Set access token + user (AUTO LOGIN)
+      setAccessToken(res.data.accessToken);
+      setUser(res.data.user);
+
+      navigate("/"); // redirect home
+
+    } catch (err) {
+      setError(err.response?.data?.message || "Signup failed");
+    }
   };
 
   return (

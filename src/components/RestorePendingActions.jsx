@@ -7,21 +7,22 @@ const RestorePendingActions = () => {
   const { addToCart, toggleWishlist } = useStore();
 
   useEffect(() => {
-    // Only run this if we have a successfully authenticated user
-    if (user) {
-      const pendingCart = localStorage.getItem("pendingCart");
-      if (pendingCart) {
-        addToCart(JSON.parse(pendingCart));
-        localStorage.removeItem("pendingCart");
-      }
+    if (!user) return;
 
-      const pendingWishlist = localStorage.getItem("pendingWishlist");
-      if (pendingWishlist) {
-        toggleWishlist(JSON.parse(pendingWishlist));
-        localStorage.removeItem("pendingWishlist");
-      }
+    const pendingCart = localStorage.getItem("pendingCart");
+    const pendingWishlist = localStorage.getItem("pendingWishlist");
+
+    if (pendingCart) {
+      addToCart(JSON.parse(pendingCart));
+      localStorage.removeItem("pendingCart");
     }
-  }, [user, addToCart, toggleWishlist]);
+
+    if (pendingWishlist) {
+      toggleWishlist(JSON.parse(pendingWishlist));
+      localStorage.removeItem("pendingWishlist");
+    }
+
+  }, [user]); 
 
   // This component doesn't render any UI
   return null; 
