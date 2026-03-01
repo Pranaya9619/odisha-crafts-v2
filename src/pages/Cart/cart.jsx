@@ -27,7 +27,7 @@ const Cart = () => {
   const [loading, setLoading] = useState(false);
 
   const subtotal = cart.reduce((acc, item) => {
-    const price = Number(item.price) || 0;
+    const price = Number(item.product?.price) || 0;
     const qty = Number(item.quantity) || 1;
     return acc + price * qty;
   }, 0);
@@ -128,22 +128,22 @@ const Cart = () => {
                 className="bg-white p-6 rounded-xl shadow hover:shadow-lg transition-all duration-300 flex flex-col md:flex-row md:items-center justify-between gap-6"
               >
                 <div
-                  onClick={() => navigate(`/product/${item._id}`)}
+                  onClick={() => navigate(`/product/${item.product._id}`)}
                   className="flex items-center gap-4 cursor-pointer"
                 >
-                  {item.image && (
+                  {item.product?.image && (
                     <img
-                      src={item.image}
-                      alt={item.name}
+                      src={item.product.image}
+                      alt={item.product.name}
                       className="w-20 h-20 object-cover rounded-lg transition-transform duration-300 hover:scale-105"
                     />
                   )}
                   <div>
                     <h2 className="font-semibold text-lg hover:text-orange-600 transition">
-                      {item.name}
+                      {item.product?.name}
                     </h2>
                     <p className="text-stone-600">
-                      ₹{Number(item.price).toLocaleString()}
+                      ₹{Number(item.product?.price).toLocaleString()}
                     </p>
                   </div>
                 </div>

@@ -9,6 +9,11 @@ const Navbar = () => {
   const { cartCount, wishlist } = useStore();
   const { user, logout } = useAuth();
 
+  const handleLogout = () => {
+    logout();
+    navigate("/", { replace: true }); // 🔥 send them home cleanly
+  };
+
   return (
     <nav className="bg-white shadow-sm border-b">
       <div className="max-w-7xl mx-auto px-4 h-20 flex items-center justify-between">
@@ -22,10 +27,9 @@ const Navbar = () => {
 
         <div className="flex gap-8 items-center">
 
-          {/* 🔐 Auth Button */}
           {user ? (
             <button
-              onClick={logout}
+              onClick={handleLogout}
               className="px-4 py-2 border border-red-500 text-red-500 rounded-lg hover:bg-red-500 hover:text-white transition"
             >
               Logout

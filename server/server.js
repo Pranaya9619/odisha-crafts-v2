@@ -6,6 +6,7 @@ const connectDB = require("./config/db");
 const productRoutes = require("./routes/productRoutes");
 const artisanRoutes = require("./routes/artisanRoutes");
 const orderRoutes = require("./routes/orderRoutes");
+const cartRoutes = require("./routes/cartRoutes");
 const cookieParser = require("cookie-parser");
 const newsletterRoutes = require("./routes/newsletterRoutes");
 
@@ -36,7 +37,7 @@ app.use("/api/artisans", require("./routes/artisanRoutes"));
 app.use("/api/categories", require("./routes/categoryRoutes"));
 app.use("/api/districts", require("./routes/districtRoutes"));
 app.use("/api/newsletter", newsletterRoutes);
-
+app.use("/api/cart", cartRoutes);
 app.get("/", (req, res) => {
   res.send("OdishaCrafts API Running...");
 });

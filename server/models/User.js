@@ -44,6 +44,20 @@ const userSchema = new mongoose.Schema(
     otpExpires: {
       type: Date,
     },
+
+    cart: [
+    {
+      product: { type: mongoose.Schema.Types.ObjectId, ref: "Product" },
+      quantity: Number,
+    }
+    ],
+    wishlist: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Product"
+      }
+    ]
+    
   },
   { timestamps: true }
 );

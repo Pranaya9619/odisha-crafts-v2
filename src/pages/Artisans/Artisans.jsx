@@ -97,12 +97,12 @@ const Artisans = () => {
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-2 flex-wrap">
                       <span className="px-2 py-1 bg-orange-100 text-orange-800 text-xs font-bold rounded uppercase tracking-wide">
-                        {artisan.specialty}
+                        {artisan.craft}
                       </span>
 
                       <span className="text-stone-500 text-sm flex items-center">
                         <MapPin size={14} className="mr-1" />
-                        {artisan.location}
+                        {artisan.district}
                       </span>
                     </div>
 
@@ -110,9 +110,11 @@ const Artisans = () => {
                       {artisan.name}
                     </h3>
 
-                    <blockquote className="border-l-4 border-orange-500 pl-4 italic text-stone-600 mb-6 text-lg">
-                      "{artisan.quote}"
-                    </blockquote>
+                    {artisan.quote && (
+                      <blockquote className="border-l-4 border-orange-500 pl-4 italic text-stone-600 mb-6 text-lg">
+                        "{artisan.quote}"
+                      </blockquote>
+                    )}
 
                     <p className="text-stone-700 leading-relaxed mb-6">
                       {artisan.bio}
