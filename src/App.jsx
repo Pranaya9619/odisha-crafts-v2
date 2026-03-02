@@ -5,12 +5,9 @@ import {
   useLocation,
   Navigate,
 } from "react-router-dom";
-
 import { AnimatePresence } from "framer-motion";
-
 import Navbar from "./components/layout/Navbar";
 import Footer from "./components/layout/Footer";
-
 import Home from "./pages/Home/Home";
 import Shop from "./pages/Shop/Shop";
 import ProductDetails from "./pages/ProductDetails/ProductDetails";
@@ -22,6 +19,10 @@ import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import { useAuth } from "./context/AuthContext";
 import OAuthSuccess from "./pages/oAuthSuccess";
+import SellerRegister from "./pages/Seller/SellerRegister";
+import SellerDashboard from "./pages/Seller/SellerDashboard";
+import MainLayout from "./components/layout/MainLayout";
+import SellerLayout from "./components/layout/SellerLayout";
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -38,15 +39,14 @@ const App = () => {
   const { user } = useAuth();
 
   return (
-    <div className="font-sans text-stone-800 bg-stone-50 min-h-screen flex flex-col">
-      
+    <>
       <ScrollToTop />
 
-      <Navbar />
+      <AnimatePresence mode="wait">
+        <Routes location={location} key={location.pathname}>
 
-      <main className="flex-grow overflow-hidden">
-        <AnimatePresence mode="wait">
-          <Routes location={location} key={location.pathname}>
+          {/* 🔵 BUYER SIDE */}
+          <Route element={<MainLayout />}>
             <Route path="/" element={<Home />} />
             <Route path="/shop" element={<Shop />} />
             <Route path="/product/:id" element={<ProductDetails />} />
@@ -60,13 +60,26 @@ const App = () => {
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
             <Route path="/oauth-success" element={<OAuthSuccess />} />
-            <Route path="*" element={<Navigate to="/" />} />
-          </Routes>
-        </AnimatePresence>
-      </main>
+          </Route>
 
-      <Footer />
-    </div>
+          {/* 🟣 SELLER SIDE */}
+          <Route element={<SellerLayout />}>
+            <Route path="/seller-register" element={<SellerRegister />} />
+            <Route
+              path="/seller-dashboard"
+              element={
+                localStorage.getItem("sellerToken")
+                  ? <SellerDashboard />
+                  : <Navigate to="/seller-register" />
+              }
+            />
+          </Route>
+
+          <Route path="*" element={<Navigate to="/" />} />
+
+        </Routes>
+      </AnimatePresence>
+    </>
   );
 };
 

@@ -3,10 +3,26 @@ const Artisan = require("../models/Artisan");
 // CREATE
 exports.createArtisan = async (req, res) => {
   try {
-    const artisan = await Artisan.create(req.body);
+    const artisan = await Artisan.create({
+      ...req.body,
+      seller: req.seller._id, // 🔥 ownership
+    });
+
     res.status(201).json(artisan);
   } catch (err) {
     res.status(500).json({ message: "Failed to create artisan" });
+  }
+};
+
+exports.getMyArtisans = async (req, res) => {
+  try {
+    const artisans = await Artisan.find({
+      seller: req.seller._id,
+    });
+
+    res.json(artisans);
+  } catch (err) {
+    res.status(500).json({ message: "Failed to fetch artisans" });
   }
 };
 
@@ -24,6 +40,7 @@ exports.getAllArtisans = async (req, res) => {
 exports.getArtisanById = async (req, res) => {
   try {
     const artisan = await Artisan.findById(req.params.id);
+
     if (!artisan)
       return res.status(404).json({ message: "Artisan not found" });
 
@@ -32,17 +49,22 @@ exports.getArtisanById = async (req, res) => {
     res.status(500).json({ message: "Error fetching artisan" });
   }
 };
-
 // UPDATE
 exports.updateArtisan = async (req, res) => {
   try {
-    const artisan = await Artisan.findByIdAndUpdate(
-      req.params.id,
-      req.body,
-      { new: true }
-    );
+    const artisan = await Artisan.findOne({
+      _id: req.params.id,
+      seller: req.seller._id, // 🔥 only owner can update
+    });
 
-    res.json(artisan);
+    if (!artisan)
+      return res.status(404).json({ message: "Not found" });
+
+    Object.assign(artisan, req.body);
+
+    const updated = await artisan.save();
+
+    res.json(updated);
   } catch (err) {
     res.status(500).json({ message: "Update failed" });
   }
@@ -51,7 +73,16 @@ exports.updateArtisan = async (req, res) => {
 // DELETE
 exports.deleteArtisan = async (req, res) => {
   try {
-    await Artisan.findByIdAndDelete(req.params.id);
+    const artisan = await Artisan.findOne({
+      _id: req.params.id,
+      seller: req.seller._id,
+    });
+
+    if (!artisan)
+      return res.status(404).json({ message: "Not found" });
+
+    await artisan.deleteOne();
+
     res.json({ message: "Artisan deleted" });
   } catch (err) {
     res.status(500).json({ message: "Delete failed" });

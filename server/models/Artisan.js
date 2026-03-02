@@ -9,6 +9,11 @@ const artisanSchema = new mongoose.Schema({
   image: String,
   quote: String,
   experience: String,
+  seller: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Seller",
+    required: true,
+  },
 }, { timestamps: true });
 
 module.exports = mongoose.model("Artisan", artisanSchema);

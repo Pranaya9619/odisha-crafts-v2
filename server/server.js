@@ -9,7 +9,7 @@ const orderRoutes = require("./routes/orderRoutes");
 const cartRoutes = require("./routes/cartRoutes");
 const cookieParser = require("cookie-parser");
 const newsletterRoutes = require("./routes/newsletterRoutes");
-
+const sellerRoutes = require("./routes/sellerRoutes");
 require("./config/passport");
 
 connectDB();
@@ -38,6 +38,8 @@ app.use("/api/categories", require("./routes/categoryRoutes"));
 app.use("/api/districts", require("./routes/districtRoutes"));
 app.use("/api/newsletter", newsletterRoutes);
 app.use("/api/cart", cartRoutes);
+app.use("/api/seller", sellerRoutes);
+app.use("/api/artisans", artisanRoutes);
 app.get("/", (req, res) => {
   res.send("OdishaCrafts API Running...");
 });
