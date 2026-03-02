@@ -43,16 +43,24 @@ export const StoreProvider = ({ children }) => {
   };
 
   const cartCount = useMemo(
-    () => cart.reduce((acc, item) => acc + item.quantity, 0),
+    () =>
+      cart.reduce((acc, item) => {
+        if (!item || !item.product) return acc;
+        return acc + (item.quantity || 0);
+      }, 0),
     [cart]
   );
 
   const cartTotal = useMemo(
     () =>
-      cart.reduce(
-        (acc, item) => acc + item.product.price * item.quantity,
-        0
-      ),
+      cart.reduce((acc, item) => {
+        if (!item || !item.product) return acc;
+
+        const price = Number(item.product.price) || 0;
+        const qty = Number(item.quantity) || 0;
+
+        return acc + price * qty;
+      }, 0),
     [cart]
   );
 

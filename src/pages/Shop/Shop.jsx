@@ -10,6 +10,7 @@ const Shop = () => {
 
   const activeCategory = searchParams.get("category");
   const activeDistrict = searchParams.get("district");
+  const activeArtisan = searchParams.get("artisan");
 
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
@@ -58,10 +59,17 @@ const Shop = () => {
   }, [searchParams]);
 
   const setFilter = (type, value) => {
-    const params = new URLSearchParams(searchParams);
+    const params = new URLSearchParams();
 
-    if (!value) params.delete(type);
-    else params.set(type, value);
+    if (type === "category") {
+      if (value) params.set("category", value);
+      if (activeDistrict) params.set("district", activeDistrict);
+    }
+
+    if (type === "district") {
+      if (value) params.set("district", value);
+      if (activeCategory) params.set("category", activeCategory);
+    }
 
     navigate(`/shop?${params.toString()}`);
   };

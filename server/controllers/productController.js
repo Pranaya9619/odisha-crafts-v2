@@ -1,12 +1,13 @@
 const Product = require("../models/Product");
 
 exports.getAllProducts = async (req, res) => {
-  const { category, district } = req.query;
+  const { category, district, artisan } = req.query;
 
   let filter = {};
 
   if (category) filter.category = category;
   if (district) filter.district = district;
+  if (artisan) filter.artisan = artisan;
 
   const products = await Product.find(filter);
   res.json(products);
