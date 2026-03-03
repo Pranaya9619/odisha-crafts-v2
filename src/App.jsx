@@ -23,6 +23,7 @@ import SellerRegister from "./pages/Seller/SellerRegister";
 import SellerDashboard from "./pages/Seller/SellerDashboard";
 import MainLayout from "./components/layout/MainLayout";
 import SellerLayout from "./components/layout/SellerLayout";
+import Profile from "./pages/Profile";
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -74,7 +75,7 @@ const App = () => {
               }
             />
           </Route>
-
+          <Route path="/profile" element={<Profile />} />
           <Route path="*" element={<Navigate to="/" />} />
 
         </Routes>

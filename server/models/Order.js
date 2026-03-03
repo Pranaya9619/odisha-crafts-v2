@@ -6,12 +6,19 @@ const orderItemSchema = new mongoose.Schema({
     ref: "Product",
     required: true,
   },
+  name: {
+    type: String, // snapshot so product name change doesn’t affect past orders
+    required: true,
+  },
+  image: {
+    type: String, // snapshot image
+  },
   quantity: {
     type: Number,
     required: true,
   },
   price: {
-    type: Number,
+    type: Number, // price at time of purchase
     required: true,
   },
 });
@@ -25,6 +32,15 @@ const orderSchema = new mongoose.Schema(
     },
 
     items: [orderItemSchema],
+
+    shippingAddress: {
+      fullName: String,
+      phone: String,
+      street: String,
+      city: String,
+      state: String,
+      pincode: String,
+    },
 
     totalAmount: {
       type: Number,
@@ -45,9 +61,11 @@ const orderSchema = new mongoose.Schema(
 
     orderStatus: {
       type: String,
-      enum: ["placed", "shipped", "delivered", "cancelled"],
+      enum: ["placed", "processing", "shipped", "delivered", "cancelled"],
       default: "placed",
     },
+
+    deliveredAt: Date,
   },
   { timestamps: true }
 );

@@ -1,6 +1,19 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
 
+const addressSchema = new mongoose.Schema(
+  {
+    fullName: { type: String, required: true },
+    phone: { type: String, required: true },
+    street: { type: String, required: true },
+    city: { type: String, required: true },
+    state: { type: String, required: true },
+    pincode: { type: String, required: true },
+    isDefault: { type: Boolean, default: false },
+  },
+  { _id: true }
+);
+
 const userSchema = new mongoose.Schema(
   {
     name: {
@@ -24,7 +37,7 @@ const userSchema = new mongoose.Schema(
     password: {
       type: String,
       minlength: 6,
-      select: false, // 🔐 prevents returning password in queries
+      select: false,
     },
 
     googleId: {
@@ -37,6 +50,24 @@ const userSchema = new mongoose.Schema(
       default: "user",
     },
 
+    /* ================= VERIFICATION ================= */
+
+    isEmailVerified: {
+      type: Boolean,
+      default: false,
+    },
+
+    phone: {
+      type: String,
+    },
+
+    isPhoneVerified: {
+      type: Boolean,
+      default: false,
+    },
+
+    /* ================= OTP ================= */
+
     otp: {
       type: String,
     },
@@ -45,48 +76,56 @@ const userSchema = new mongoose.Schema(
       type: Date,
     },
 
+    /* ================= PROFILE ================= */
+
+    avatar: {
+      type: String,
+    },
+
+    addresses: [addressSchema],
+
+    /* ================= CART + WISHLIST ================= */
+
     cart: [
-    {
-      product: { type: mongoose.Schema.Types.ObjectId, ref: "Product" },
-      quantity: Number,
-    }
+      {
+        product: { type: mongoose.Schema.Types.ObjectId, ref: "Product" },
+        quantity: { type: Number, default: 1 },
+      },
     ],
+
     wishlist: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Product"
-      }
-    ]
-    
+        ref: "Product",
+      },
+    ],
   },
   { timestamps: true }
 );
 
+/* ================= HASH PASSWORD ================= */
 
-// 🔒 HASH PASSWORD BEFORE SAVE
 userSchema.pre("save", async function () {
   if (!this.isModified("password")) return;
-
   if (!this.password) return;
 
   const salt = await bcrypt.genSalt(10);
   this.password = await bcrypt.hash(this.password, salt);
 });
 
+/* ================= PASSWORD COMPARE ================= */
 
-// 🔐 PASSWORD COMPARE METHOD
 userSchema.methods.comparePassword = async function (enteredPassword) {
   return await bcrypt.compare(enteredPassword, this.password);
 };
 
+/* ================= AUTO REMOVE EXPIRED OTP ================= */
 
-// 🧹 AUTO REMOVE EXPIRED OTP
 userSchema.methods.clearExpiredOTP = function () {
   if (this.otpExpires && this.otpExpires < Date.now()) {
     this.otp = undefined;
     this.otpExpires = undefined;
   }
 };
-
 
 module.exports = mongoose.model("User", userSchema);

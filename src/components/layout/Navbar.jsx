@@ -1,6 +1,6 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { ShoppingBag, Heart } from "lucide-react";
+import { ShoppingBag, Heart, User } from "lucide-react";
 import { useStore } from "../../context/StoreContext";
 import { useAuth } from "../../context/AuthContext";
 
@@ -11,13 +11,14 @@ const Navbar = () => {
 
   const handleLogout = () => {
     logout();
-    navigate("/", { replace: true }); // 🔥 send them home cleanly
+    navigate("/", { replace: true });
   };
 
   return (
     <nav className="bg-white shadow-sm border-b">
       <div className="max-w-7xl mx-auto px-4 h-20 flex items-center justify-between">
-
+        
+        {/* Logo */}
         <div
           onClick={() => navigate("/")}
           className="cursor-pointer font-serif text-2xl font-bold"
@@ -27,26 +28,11 @@ const Navbar = () => {
 
         <div className="flex gap-8 items-center">
 
-          {user ? (
-            <button
-              onClick={handleLogout}
-              className="px-4 py-2 border border-red-500 text-red-500 rounded-lg hover:bg-red-500 hover:text-white transition"
-            >
-              Logout
-            </button>
-          ) : (
-            <button
-              onClick={() => navigate("/login")}
-              className="px-4 py-2 border border-orange-600 text-orange-600 rounded-lg hover:bg-orange-600 hover:text-white transition"
-            >
-              Login
-            </button>
-          )}
-
           <button onClick={() => navigate("/shop")}>Shop</button>
           <button onClick={() => navigate("/artisans")}>Artisans</button>
           <button onClick={() => navigate("/impact")}>Impact</button>
 
+          {/* Wishlist */}
           <button onClick={() => navigate("/wishlist")} className="relative">
             <Heart size={20} />
             {wishlist.length > 0 && (
@@ -56,6 +42,7 @@ const Navbar = () => {
             )}
           </button>
 
+          {/* Cart */}
           <button onClick={() => navigate("/cart")} className="relative">
             <ShoppingBag size={20} />
             {cartCount > 0 && (
@@ -64,6 +51,47 @@ const Navbar = () => {
               </span>
             )}
           </button>
+
+          {/* Profile Section */}
+          {user ? (
+            <div className="flex items-center gap-3">
+
+              {/* Avatar Click → Profile */}
+              <button
+                onClick={() => navigate("/profile")}
+                className="flex items-center gap-2 border px-3 py-1.5 rounded-full hover:bg-gray-100 transition"
+              >
+                {user.avatar ? (
+                  <img
+                    src={user.avatar}
+                    alt="avatar"
+                    className="w-7 h-7 rounded-full object-cover"
+                  />
+                ) : (
+                  <User size={18} />
+                )}
+                <span className="hidden md:block text-sm font-medium">
+                  {user.name.split(" ")[0]}
+                </span>
+              </button>
+
+              {/* Small Logout Button */}
+              <button
+                onClick={handleLogout}
+                className="text-sm text-red-500 hover:underline"
+              >
+                Logout
+              </button>
+
+            </div>
+          ) : (
+            <button
+              onClick={() => navigate("/login")}
+              className="px-4 py-2 border border-orange-600 text-orange-600 rounded-lg hover:bg-orange-600 hover:text-white transition"
+            >
+              Login
+            </button>
+          )}
 
         </div>
       </div>
