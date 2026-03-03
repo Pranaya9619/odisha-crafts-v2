@@ -1,8 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
-
+import { useSearchParams } from "react-router-dom";
 import ProfileLayout from "../components/profile/ProfileLayout";
 import ProfileOverview from "../components/profile/ProfileOverview";
 import ProfileSecurity from "../components/profile/ProfileSecurity";
@@ -13,8 +13,15 @@ import ProfileCart from "../components/profile/ProfileCart";
 import PageTransition from "../components/layout/PageTransition";
 
 const Profile = () => {
-  const [activeTab, setActiveTab] = useState("overview");
+  const [searchParams, setSearchParams] = useSearchParams();
+  const initialTab = searchParams.get("tab") || "overview";
+
+  const [activeTab, setActiveTab] = useState(initialTab);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    setSearchParams({ tab: activeTab });
+  }, [activeTab]);
 
   const renderContent = () => {
     switch (activeTab) {

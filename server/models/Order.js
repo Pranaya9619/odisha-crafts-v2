@@ -1,28 +1,5 @@
 const mongoose = require("mongoose");
 
-const orderItemSchema = new mongoose.Schema({
-  product: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Product",
-    required: true,
-  },
-  name: {
-    type: String, // snapshot so product name change doesn’t affect past orders
-    required: true,
-  },
-  image: {
-    type: String, // snapshot image
-  },
-  quantity: {
-    type: Number,
-    required: true,
-  },
-  price: {
-    type: Number, // price at time of purchase
-    required: true,
-  },
-});
-
 const orderSchema = new mongoose.Schema(
   {
     user: {
@@ -31,16 +8,16 @@ const orderSchema = new mongoose.Schema(
       required: true,
     },
 
-    items: [orderItemSchema],
-
-    shippingAddress: {
-      fullName: String,
-      phone: String,
-      street: String,
-      city: String,
-      state: String,
-      pincode: String,
-    },
+    items: [
+      {
+        product: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Product",
+        },
+        quantity: Number,
+        price: Number,
+      },
+    ],
 
     totalAmount: {
       type: Number,
@@ -49,7 +26,7 @@ const orderSchema = new mongoose.Schema(
 
     paymentMethod: {
       type: String,
-      enum: ["upi", "card", "cod"],
+      enum: ["razorpay", "cod", "coupon"],
       required: true,
     },
 
@@ -65,7 +42,10 @@ const orderSchema = new mongoose.Schema(
       default: "placed",
     },
 
-    deliveredAt: Date,
+    razorpayOrderId: String,
+    razorpayPaymentId: String,
+
+    estimatedDelivery: Date,
   },
   { timestamps: true }
 );

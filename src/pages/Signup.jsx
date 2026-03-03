@@ -38,8 +38,18 @@ const Signup = () => {
     e.preventDefault();
     setError("");
 
+    if (!formData.name || !formData.email || !formData.password) {
+      setError("Please fill in all required fields.");
+      return;
+    }
+
+    if (formData.password.length < 6) {
+      setError("Password must be at least 6 characters long.");
+      return;
+    }
+
     if (formData.password !== formData.confirmPassword) {
-      setError("Passwords do not match");
+      setError("Passwords do not match.");
       return;
     }
 
@@ -50,13 +60,12 @@ const Signup = () => {
         password: formData.password,
       });
 
-      // 🚀 Always navigate on success
       navigate("/verify-otp", {
         state: { email: formData.email },
       });
 
     } catch (err) {
-      setError(err.response?.data?.message || "Signup failed");
+      setError(err.response?.data?.message || "Signup failed. Please try again.");
     }
   };
 
@@ -112,10 +121,10 @@ const Signup = () => {
               <div className="text-xs">
                 <span
                   className={`font-medium ${passwordStrength === "strong"
-                      ? "text-green-600"
-                      : passwordStrength === "medium"
-                        ? "text-yellow-600"
-                        : "text-red-500"
+                    ? "text-green-600"
+                    : passwordStrength === "medium"
+                      ? "text-yellow-600"
+                      : "text-red-500"
                     }`}
                 >
                   Strength: {passwordStrength}

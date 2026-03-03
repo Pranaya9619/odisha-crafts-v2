@@ -60,10 +60,9 @@ const ProfileOrders = () => {
             key={tab}
             onClick={() => setActiveTab(tab)}
             className={`px-4 py-2 rounded-full text-sm transition
-              ${
-                activeTab === tab
-                  ? "bg-orange-600 text-white"
-                  : "border hover:bg-gray-100"
+              ${activeTab === tab
+                ? "bg-orange-600 text-white"
+                : "border hover:bg-gray-100"
               }`}
           >
             {tab === "current" ? "Current Orders" : "Past Orders"}
@@ -98,29 +97,43 @@ const ProfileOrders = () => {
               </div>
 
               {/* Items */}
-              <div className="space-y-3">
+              <div className="space-y-4">
                 {order.items.map((item, index) => (
                   <div
                     key={index}
-                    className="flex items-center gap-4 border rounded-lg p-3"
+                    className="flex items-center gap-5 bg-gray-50 rounded-xl p-4 hover:shadow-md transition"
                   >
-                    {item.image && (
-                      <img
-                        src={item.image}
-                        alt={item.name}
-                        className="w-16 h-16 object-cover rounded-lg"
-                      />
-                    )}
+                    {/* IMAGE */}
+                    <div className="w-20 h-20 rounded-lg overflow-hidden bg-white shadow-sm">
+                      {item.product?.image && (
+                        <img
+                          src={item.product.image}
+                          alt={item.product?.name}
+                          className="w-full h-full object-cover"
+                        />
+                      )}
+                    </div>
 
+                    {/* DETAILS */}
                     <div className="flex-1">
-                      <p className="font-medium">{item.name}</p>
+                      <h4 className="font-semibold text-gray-800">
+                        {item.product?.name}
+                      </h4>
+
                       <p className="text-sm text-gray-500">
                         Qty: {item.quantity}
                       </p>
+
+                      <p className="text-sm text-gray-500">
+                        ₹{item.price} each
+                      </p>
                     </div>
 
-                    <div className="text-sm font-semibold">
-                      ₹{item.price * item.quantity}
+                    {/* TOTAL */}
+                    <div className="text-right">
+                      <p className="font-semibold text-gray-800">
+                        ₹{item.price * item.quantity}
+                      </p>
                     </div>
                   </div>
                 ))}
