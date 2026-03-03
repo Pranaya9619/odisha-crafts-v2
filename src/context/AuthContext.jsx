@@ -1,7 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import API, { setAccessToken } from "../services/api";
 import axios from "axios";
-import { useStore } from "./StoreContext";
 //const { clearStore, setCart, setWishlist } = useStore();
 const AuthContext = createContext();
 
@@ -9,7 +8,6 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  const { clearStore, fetchCart } = useStore();
 
   /* ================= AUTO REFRESH ================= */
 
@@ -23,7 +21,6 @@ export const AuthProvider = ({ children }) => {
         const profile = await API.get("/auth/me");
         setUser(profile.data);
 
-        await fetchCart();
       } catch (err) {
         setUser(null);
       } finally {
@@ -42,12 +39,12 @@ export const AuthProvider = ({ children }) => {
       password,
     });
 
-    // 🔥 Store access token properly
     setAccessToken(res.data.accessToken);
-    setUser(res.data.user);
 
-    await fetchCart();
-
+    // 🔥 Fetch full profile after login
+    const profile = await API.get("/auth/me");
+    setUser(profile.data);
+    
     return res.data;
   };
 
@@ -65,7 +62,6 @@ export const AuthProvider = ({ children }) => {
     setAccessToken(null);
     setUser(null);
 
-    clearStore(); // 👈 clears cart + wishlist instantly
   };
 
   return (

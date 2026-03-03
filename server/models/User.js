@@ -42,6 +42,7 @@ const userSchema = new mongoose.Schema(
 
     googleId: {
       type: String,
+      default: null,
     },
 
     role: {
@@ -68,13 +69,25 @@ const userSchema = new mongoose.Schema(
 
     /* ================= OTP ================= */
 
-    otp: {
-      type: String,
-    },
+    /* ================= EMAIL OTP ================= */
 
-    otpExpires: {
-      type: Date,
-    },
+      emailOTP: {
+        type: String,
+      },
+
+      emailOTPExpires: {
+        type: Date,
+      },
+
+      /* ================= PHONE OTP ================= */
+
+      phoneOTP: {
+        type: String,
+      },
+
+      phoneOTPExpires: {
+        type: Date,
+      },
 
     /* ================= PROFILE ================= */
 
@@ -121,10 +134,17 @@ userSchema.methods.comparePassword = async function (enteredPassword) {
 
 /* ================= AUTO REMOVE EXPIRED OTP ================= */
 
-userSchema.methods.clearExpiredOTP = function () {
-  if (this.otpExpires && this.otpExpires < Date.now()) {
-    this.otp = undefined;
-    this.otpExpires = undefined;
+userSchema.methods.clearExpiredOTPs = function () {
+  const now = Date.now();
+
+  if (this.emailOTPExpires && this.emailOTPExpires < now) {
+    this.emailOTP = undefined;
+    this.emailOTPExpires = undefined;
+  }
+
+  if (this.phoneOTPExpires && this.phoneOTPExpires < now) {
+    this.phoneOTP = undefined;
+    this.phoneOTPExpires = undefined;
   }
 };
 

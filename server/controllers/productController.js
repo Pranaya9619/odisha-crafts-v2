@@ -41,14 +41,20 @@ exports.addReview = async (req, res) => {
   try {
     const { rating, comment } = req.body;
 
+    //console.log("REQ USER:", req.user);
+    //console.log("BODY:", req.body);
+
     const product = await Product.findById(req.params.id);
 
     if (!product) {
       return res.status(404).json({ message: "Product not found" });
     }
 
+    // 🛡 SAFE duplicate check
     const alreadyReviewed = product.reviews.find(
-      (r) => r.user.toString() === req.user._id.toString()
+      (r) =>
+        r.user &&
+        r.user.toString() === req.user?._id?.toString()
     );
 
     if (alreadyReviewed) {
@@ -67,14 +73,67 @@ exports.addReview = async (req, res) => {
     product.numReviews = product.reviews.length;
 
     product.averageRating =
-      product.reviews.reduce((acc, item) => acc + item.rating, 0) /
-      product.reviews.length;
+      product.reviews.reduce(
+        (acc, item) => acc + Number(item.rating || 0),
+        0
+      ) / product.reviews.length;
 
     await product.save();
 
     res.status(201).json({ message: "Review added" });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Server error" });
+    //console.error("ADD REVIEW ERROR:", error);
+    res.status(500).json({ message: error.message });
   }
+};
+
+exports.updateReview = async (req, res) => {
+  const { rating, comment } = req.body;
+
+  const product = await Product.findById(req.params.id);
+
+  if (!product) {
+    return res.status(404).json({ message: "Product not found" });
+  }
+
+  const review = product.reviews.id(req.params.reviewId);
+
+  if (!review) {
+    return res.status(404).json({ message: "Review not found" });
+  }
+
+  if (review.user.toString() !== req.user._id.toString()) {
+    return res.status(401).json({ message: "Not authorized" });
+  }
+
+  review.rating = rating;
+  review.comment = comment;
+
+  await product.save();
+
+  res.json({ message: "Review updated" });
+};
+
+exports.deleteReview = async (req, res) => {
+  const product = await Product.findById(req.params.id);
+
+  if (!product) {
+    return res.status(404).json({ message: "Product not found" });
+  }
+
+  const review = product.reviews.id(req.params.reviewId);
+
+  if (!review) {
+    return res.status(404).json({ message: "Review not found" });
+  }
+
+  if (review.user.toString() !== req.user._id.toString()) {
+    return res.status(401).json({ message: "Not authorized" });
+  }
+
+  review.deleteOne();
+
+  await product.save();
+
+  res.json({ message: "Review deleted" });
 };

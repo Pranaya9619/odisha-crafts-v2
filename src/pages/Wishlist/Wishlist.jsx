@@ -71,7 +71,7 @@ const Wishlist = () => {
         >
           {wishlist.map((item) => (
             <motion.div
-              key={item.id}
+              key={item._id}
               variants={fadeUp}
               whileHover={{ y: -6 }}
               transition={{ duration: 0.3 }}
@@ -80,7 +80,7 @@ const Wishlist = () => {
               {/* Image */}
               {item.image && (
                 <div
-                  onClick={() => navigate(`/product/${item.id}`)}
+                  onClick={() => navigate(`/product/${item._id}`)}
                   className="h-56 overflow-hidden cursor-pointer"
                 >
                   <img

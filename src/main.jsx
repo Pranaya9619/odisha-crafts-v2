@@ -10,13 +10,12 @@ import RestorePendingActions from "./components/RestorePendingActions.jsx";
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <BrowserRouter>
-      <StoreProvider>
-        <AuthProvider>
+      <AuthProvider>
+        <StoreProvider>
           <RestorePendingActions />
-            <App />
-          <RestorePendingActions />
-        </AuthProvider>
-      </StoreProvider>
+          <App />
+        </StoreProvider>
+      </AuthProvider>
     </BrowserRouter>
   </React.StrictMode>
 );

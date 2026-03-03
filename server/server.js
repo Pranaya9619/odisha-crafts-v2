@@ -3,10 +3,9 @@ const express = require("express");
 const cors = require("cors");
 const passport = require("passport");
 const cookieParser = require("cookie-parser");
-
 const connectDB = require("./config/db");
-
 require("./config/passport");
+const couponRoutes = require("./routes/couponRoutes");
 
 /* ================= CONNECT DB ================= */
 connectDB();
@@ -40,6 +39,7 @@ app.use("/api/districts", require("./routes/districtRoutes"));
 app.use("/api/newsletter", require("./routes/newsletterRoutes"));
 app.use("/api/cart", require("./routes/cartRoutes"));
 app.use("/api/seller", require("./routes/sellerRoutes"));
+app.use("/api/coupons", couponRoutes);
 
 /* ================= ROOT ================= */
 

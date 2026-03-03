@@ -24,6 +24,7 @@ import SellerDashboard from "./pages/Seller/SellerDashboard";
 import MainLayout from "./components/layout/MainLayout";
 import SellerLayout from "./components/layout/SellerLayout";
 import Profile from "./pages/Profile";
+import VerifyOTP from "./pages/VerifyOTP";
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -61,6 +62,7 @@ const App = () => {
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
             <Route path="/oauth-success" element={<OAuthSuccess />} />
+            <Route path="/verify-otp" element={<VerifyOTP />} />
           </Route>
 
           {/* 🟣 SELLER SIDE */}

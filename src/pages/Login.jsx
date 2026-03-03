@@ -30,6 +30,8 @@ const Login = () => {
     password: "",
   });
 
+  const [errorMessage, setErrorMessage] = useState("");
+
   const handleChange = (e) => {
     setFormData((prev) => ({
       ...prev,
@@ -39,23 +41,29 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setErrorMessage("");
 
     try {
       await login(formData.email, formData.password);
-      
-      // The global listener will handle the pending items automatically
       navigate(from, { replace: true });
 
     } catch (error) {
       console.error("Login error:", error);
-      alert("Login failed. Please check credentials.");
+
+      const message = error.response?.data?.message;
+
+      if (message === "GOOGLE_LOGIN_REQUIRED") {
+        setErrorMessage("Please use Google login for this email id.");
+      } else {
+        setErrorMessage("Login failed. Please check credentials.");
+      }
     }
   };
 
   return (
     <PageTransition>
       <div className="relative min-h-screen flex items-center justify-center bg-gradient-to-br from-orange-50 to-yellow-100 px-4 overflow-hidden">
-        
+
         {/* Background glow */}
         <motion.div
           animate={{ y: [0, -30, 0] }}
@@ -79,7 +87,7 @@ const Login = () => {
           </div>
 
           <form onSubmit={handleSubmit} className="flex flex-col gap-5">
-            
+
             <InputField
               label="Email"
               type="email"
@@ -97,6 +105,12 @@ const Login = () => {
               onChange={handleChange}
               placeholder="Enter your password"
             />
+
+            {errorMessage && (
+              <p className="text-sm text-red-500 -mt-3">
+                {errorMessage}
+              </p>
+            )}
 
             <motion.button
               whileHover={{ y: -3 }}

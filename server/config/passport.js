@@ -10,7 +10,7 @@ passport.use(
       callbackURL: "http://localhost:5000/api/auth/google/callback",
     },
     async (accessToken, refreshToken, profile, done) => {
-      console.log("PROFILE RECEIVED:", profile);
+      //console.log("PROFILE RECEIVED:", profile);
       try {
         const email = profile.emails[0].value;
 

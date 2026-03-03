@@ -5,6 +5,17 @@ const { protect } = require("../middleware/authMiddleware");
 
 router.get("/", productController.getAllProducts);
 router.get("/:id", productController.getProductById);
+router.put(
+  "/:id/reviews/:reviewId",
+  protect,
+  productController.updateReview
+);
+
+router.delete(
+  "/:id/reviews/:reviewId",
+  protect,
+  productController.deleteReview
+);
 
 // Protected create product
 router.post("/", protect, productController.createProduct);

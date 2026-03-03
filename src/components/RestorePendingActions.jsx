@@ -1,31 +1,46 @@
 import { useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useStore } from "../context/StoreContext";
+import API from "../services/api";
 
 const RestorePendingActions = () => {
   const { user } = useAuth();
-  const { addToCart, toggleWishlist } = useStore();
+  const { fetchCart } = useStore();
 
   useEffect(() => {
     if (!user) return;
 
-    const pendingCart = localStorage.getItem("pendingCart");
-    const pendingWishlist = localStorage.getItem("pendingWishlist");
+    const storedAction = localStorage.getItem("postLoginAction");
+    if (!storedAction) return;
 
-    if (pendingCart) {
-      addToCart(JSON.parse(pendingCart));
-      localStorage.removeItem("pendingCart");
-    }
+    // 🔥 REMOVE IMMEDIATELY
+    localStorage.removeItem("postLoginAction");
 
-    if (pendingWishlist) {
-      toggleWishlist(JSON.parse(pendingWishlist));
-      localStorage.removeItem("pendingWishlist");
-    }
+    const restore = async () => {
+      try {
+        const action = JSON.parse(storedAction);
 
-  }, [user]); 
+        if (action.type === "cart") {
+          await API.post("/cart", {
+            productId: action.productId,
+          });
+        }
 
-  // This component doesn't render any UI
-  return null; 
+        if (action.type === "wishlist") {
+          await API.post("/cart/wishlist", {
+            productId: action.productId,
+          });
+        }
+
+        await fetchCart();
+        console.log("Restore executed once.");
+      } catch (err) {
+        console.error("Restore failed:", err);
+      }
+    };
+
+    restore();
+  }, [user]);
 };
 
 export default RestorePendingActions;

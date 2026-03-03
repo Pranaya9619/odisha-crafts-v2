@@ -1,15 +1,35 @@
 import React, { createContext, useContext, useMemo, useState, useEffect } from "react";
 import API from "../services/api";
+import { useAuth } from "./AuthContext";
 
 const StoreContext = createContext(null);
 
 export const StoreProvider = ({ children }) => {
   const [cart, setCart] = useState([]);
   const [wishlist, setWishlist] = useState([]);
+  const auth = useAuth();
+  const user = auth?.user;
 
-  // useEffect(() => {
-  //   console.log("CART DATA:", cart);
-  // }, [cart]);
+  useEffect(() => {
+    if (!user) {
+      setCart([]);
+      setWishlist([]);
+      return;
+    }
+
+    const loadStore = async () => {
+      try {
+        const res = await API.get("/cart");
+        setCart(res.data.cart || []);
+        setWishlist(res.data.wishlist || []);
+      } catch (err) {
+        console.error("Cart sync failed:", err);
+      }
+    };
+
+    loadStore();
+  }, [user]);;
+
   /* ================= SYNC FROM BACKEND ================= */
 
   const fetchCart = async () => {
@@ -21,6 +41,19 @@ export const StoreProvider = ({ children }) => {
   /* ================= CART ACTIONS ================= */
 
   const addToCart = async (product) => {
+    if (!user) {
+      localStorage.setItem(
+        "postLoginAction",
+        JSON.stringify({
+          type: "cart",
+          productId: product._id,
+        })
+      );
+
+      window.location.href = "/login";
+      return;
+    }
+
     await API.post("/cart", { productId: product._id });
     await fetchCart();
   };
@@ -30,10 +63,33 @@ export const StoreProvider = ({ children }) => {
     await fetchCart();
   };
 
+  /* ================= QUANTITY ================= */
+
+  const increaseQty = async (productId) => {
+    await API.put(`/cart/increase/${productId}`);
+    await fetchCart();
+  };
+
+  const decreaseQty = async (productId) => {
+    await API.put(`/cart/decrease/${productId}`);
+    await fetchCart();
+  };
+
   const toggleWishlist = async (product) => {
-    await API.post("/cart/wishlist", {
-      productId: product._id,
-    });
+    if (!user) {
+      localStorage.setItem(
+        "postLoginAction",
+        JSON.stringify({
+          type: "wishlist",
+          productId: product._id,
+        })
+      );
+
+      window.location.href = "/login";
+      return;
+    }
+
+    await API.post("/cart/wishlist", { productId: product._id });
     await fetchCart();
   };
 
@@ -71,6 +127,8 @@ export const StoreProvider = ({ children }) => {
         wishlist,
         cartCount,
         cartTotal,
+        increaseQty,
+        decreaseQty,
         addToCart,
         removeFromCart,
         toggleWishlist,

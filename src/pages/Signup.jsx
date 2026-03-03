@@ -5,12 +5,10 @@ import { motion } from "framer-motion";
 import InputField from "../components/ui/InputField";
 import PageTransition from "../components/layout/PageTransition";
 import { FcGoogle } from "react-icons/fc";
-import API, { setAccessToken } from "../services/api";
-import { useAuth } from "../context/AuthContext";
+import API from "../services/api";
 
 const Signup = () => {
   const navigate = useNavigate();
-  const { setUser } = useAuth();
 
   const [formData, setFormData] = useState({
     name: "",
@@ -46,28 +44,27 @@ const Signup = () => {
     }
 
     try {
-      const res = await API.post("/auth/register", {
+      await API.post("/auth/register", {
         name: formData.name,
         email: formData.email,
         password: formData.password,
       });
 
-      // 🔥 Set access token + user (AUTO LOGIN)
-      setAccessToken(res.data.accessToken);
-      setUser(res.data.user);
-
-      navigate("/"); // redirect home
+      // 🚀 Always navigate on success
+      navigate("/verify-otp", {
+        state: { email: formData.email },
+      });
 
     } catch (err) {
       setError(err.response?.data?.message || "Signup failed");
     }
   };
 
+  // 🔥 THIS RETURN MUST BE OUTSIDE handleSubmit
   return (
     <PageTransition>
       <div className="relative min-h-screen flex items-center justify-center bg-gradient-to-br from-orange-50 to-yellow-100 px-4 overflow-hidden">
 
-        {/* Ambient Glow */}
         <motion.div
           animate={{ y: [0, -40, 0] }}
           transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
@@ -85,7 +82,6 @@ const Signup = () => {
           </h1>
 
           <form onSubmit={handleSubmit} className="flex flex-col gap-5">
-
             <InputField
               label="Full Name"
               name="name"
@@ -112,17 +108,15 @@ const Signup = () => {
               placeholder="Create a password"
             />
 
-            {/* Password Strength Indicator */}
             {passwordStrength && (
               <div className="text-xs">
                 <span
-                  className={`font-medium ${
-                    passwordStrength === "strong"
+                  className={`font-medium ${passwordStrength === "strong"
                       ? "text-green-600"
                       : passwordStrength === "medium"
-                      ? "text-yellow-600"
-                      : "text-red-500"
-                  }`}
+                        ? "text-yellow-600"
+                        : "text-red-500"
+                    }`}
                 >
                   Strength: {passwordStrength}
                 </span>
@@ -151,7 +145,6 @@ const Signup = () => {
               Sign Up
             </motion.button>
 
-            {/* Divider */}
             <div className="flex items-center gap-3 my-2">
               <div className="flex-1 h-px bg-gray-300"></div>
               <span className="text-xs text-gray-400">OR</span>

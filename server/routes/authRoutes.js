@@ -1,10 +1,10 @@
 const express = require("express");
 const passport = require("passport");
+const jwt = require("jsonwebtoken");
 
 const {
   register,
   login,
-  sendOTP,
   verifyOTP,
   refreshToken,
   logout,
@@ -14,7 +14,6 @@ const {
 const { protect } = require("../middleware/authMiddleware");
 
 const router = express.Router();
-const jwt = require("jsonwebtoken");
 
 /* ============================= */
 /* NORMAL AUTH ROUTES */
@@ -23,7 +22,6 @@ const jwt = require("jsonwebtoken");
 router.post("/register", register);
 router.post("/login", login);
 router.post("/logout", logout);
-router.post("/send-otp", sendOTP);
 router.post("/verify-otp", verifyOTP);
 router.post("/refresh", refreshToken);
 router.get("/me", protect, getMe);
@@ -57,10 +55,9 @@ router.get(
     const accessToken = generateAccessToken(req.user._id);
     const refreshToken = generateRefreshToken(req.user._id);
 
-    // Set refresh cookie
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
-      secure: false, // true in production
+      secure: false,
       sameSite: "strict",
     });
 
@@ -70,7 +67,6 @@ router.get(
       email: req.user.email,
     };
 
-    // Redirect to frontend
     res.redirect(
       `http://localhost:5173/oauth-success?accessToken=${accessToken}&user=${encodeURIComponent(
         JSON.stringify(safeUser)

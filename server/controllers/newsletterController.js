@@ -20,11 +20,10 @@ exports.subscribe = async (req, res) => {
 
     // Send confirmation email (do not break API if it fails)
     try {
-      await sendEmail(
-        email,
-        "Welcome to OdishaCrafts ✨",
-        "Welcome to OdishaCrafts.",
-        `
+      await sendEmail({
+      to: email,
+      subject: "Welcome to OdishaCrafts ✨",
+      html: `
         <div style="font-family: 'Segoe UI', sans-serif; background:#fdf6ed; padding:40px;">
           <div style="max-width:600px; margin:auto; background:white; padding:30px; border-radius:12px;">
             
@@ -53,9 +52,9 @@ exports.subscribe = async (req, res) => {
             <p style="font-size:12px; color:#777;">
               If you wish to unsubscribe,
               <a href="http://localhost:5000/api/newsletter/unsubscribe?email=${email}">
-                 click here
+                click here
               </a>.
-             </p>
+            </p>
 
             <p style="font-size:12px; color:#777;">
               If you didn’t subscribe, you can ignore this email.
@@ -66,8 +65,8 @@ exports.subscribe = async (req, res) => {
             </p>
           </div>
         </div>
-        `
-);
+      `,
+    });
     } catch (err) {
       console.log("Email failed but subscription saved");
     }

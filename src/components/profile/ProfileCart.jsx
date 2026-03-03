@@ -10,8 +10,11 @@ const ProfileCart = () => {
 
     const subtotal = useMemo(() => {
         return cart.reduce((acc, item) => {
-            const price = Number(item.price) || 0;
+            if (!item.product) return acc;
+
+            const price = Number(item.product.price) || 0;
             const qty = Number(item.quantity) || 1;
+
             return acc + price * qty;
         }, 0);
     }, [cart]);
@@ -39,32 +42,32 @@ const ProfileCart = () => {
             <div className="space-y-6">
                 {cart.map((item) => (
                     <motion.div
-                        key={item._id}
+                        key={item.product._id}
                         whileHover={{ scale: 1.01 }}
                         className="border rounded-2xl p-4 flex flex-col md:flex-row gap-6 items-center"
                     >
                         <img
-                            src={item.image}
-                            alt={item.name}
+                            src={item.product?.image}
+                            alt={item.product?.name}
                             className="w-24 h-24 object-cover rounded-xl cursor-pointer"
-                            onClick={() => navigate(`/product/${item._id}`)}
+                            onClick={() => navigate(`/product/${item.product?._id}`)}
                         />
 
                         <div className="flex-1 space-y-2">
                             <p
-                                onClick={() => navigate(`/product/${item._id}`)}
-                                className="font-medium cursor-pointer hover:text-orange-600 transition"
+                            onClick={() => navigate(`/product/${item.product?._id}`)}
+                            className="font-medium cursor-pointer hover:text-orange-600 transition"
                             >
-                                {item.name}
+                            {item.product?.name}
                             </p>
 
                             <p className="text-sm text-gray-500">
-                                ₹{item.price}
+                            ₹{item.product?.price}
                             </p>
 
                             <div className="flex items-center gap-3 pt-2">
                                 <button
-                                    onClick={() => decreaseQty(item._id)}
+                                    onClick={() => decreaseQty(item.product._id)}
                                     className="px-3 py-1 border rounded-lg hover:bg-gray-100"
                                 >
                                     -
@@ -75,7 +78,7 @@ const ProfileCart = () => {
                                 </span>
 
                                 <button
-                                    onClick={() => increaseQty(item._id)}
+                                    onClick={() => increaseQty(item.product._id)}
                                     className="px-3 py-1 border rounded-lg hover:bg-gray-100"
                                 >
                                     +
@@ -85,11 +88,11 @@ const ProfileCart = () => {
 
                         <div className="flex flex-col items-end gap-3">
                             <p className="font-semibold">
-                                ₹{(Number(item.price) || 0) * (Number(item.quantity) || 1)}
+                                ₹{(Number(item.product?.price) || 0) * (Number(item.quantity) || 1)}
                             </p>
 
                             <button
-                                onClick={() => removeFromCart(item._id)}
+                                onClick={() => removeFromCart(item.product._id)}
                                 className="text-red-500 text-sm hover:underline"
                             >
                                 Remove
