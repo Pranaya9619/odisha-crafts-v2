@@ -14,11 +14,11 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const refreshAuth = async () => {
       try {
-        const res = await API.post("/auth/refresh", {}, { withCredentials: true });
+        const res = await API.post("/auth/refresh");
 
         setAccessToken(res.data.accessToken);
 
-        const profile = await API.get("/auth/me");
+        const profile = await API.get("/users/profile");
         setUser(profile.data);
 
       } catch (err) {
@@ -42,7 +42,7 @@ export const AuthProvider = ({ children }) => {
     setAccessToken(res.data.accessToken);
 
     // 🔥 Fetch full profile after login
-    const profile = await API.get("/auth/me");
+    const profile = await API.get("/users/profile");
     setUser(profile.data);
     
     return res.data;

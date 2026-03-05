@@ -1,18 +1,26 @@
 const User = require("../models/User");
 const crypto = require("crypto");
-const bcrypt = require("bcryptjs");
 const sendEmail = require("../utils/sendEmail");
+const bcrypt = require("bcryptjs");
 
 /* ================= GET PROFILE ================= */
 
 exports.getProfile = async (req, res) => {
   try {
+
     const user = await User.findById(req.user._id)
-      .select("-emailOTP -emailOTPExpires -phoneOTP -phoneOTPExpires")
+      .select("+password -emailOTP -emailOTPExpires -phoneOTP -phoneOTPExpires")
       .populate("wishlist")
       .populate("cart.product");
 
-    res.json(user);
+    const userObj = user.toObject();
+
+    userObj.passwordSet = !!user.password;
+
+    delete userObj.password;
+
+    res.json(userObj);
+
   } catch (error) {
     res.status(500).json({ message: "Failed to fetch profile" });
   }
@@ -281,5 +289,90 @@ exports.deleteAddress = async (req, res) => {
     res.json({ message: "Address deleted", addresses: user.addresses });
   } catch (error) {
     res.status(500).json({ message: "Failed to delete address" });
+  }
+};
+
+exports.changePassword = async (req, res) => {
+  try {
+
+    const user = await User.findById(req.user._id).select("+password");
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // 🔒 User created with Google → no password
+    if (!user.password) {
+      return res.status(400).json({
+        message: "This account uses Google login. Set a password first."
+      });
+    }
+
+    const currentPassword = req.body.currentPassword?.trim();
+    const newPassword = req.body.newPassword?.trim();
+    console.log("Incoming currentPassword:", `"${currentPassword}"`);
+    const isMatch = await bcrypt.compare(currentPassword, user.password);
+
+    if (!isMatch) {
+      return res.status(400).json({
+        message: "Current password is incorrect."
+      });
+    }
+
+    if (newPassword.length < 6) {
+      return res.status(400).json({
+        message: "Password must be at least 6 characters."
+      });
+    }
+
+    user.password = newPassword;
+
+    await user.save();
+
+    res.json({
+      message: "Password updated successfully."
+    });
+
+  } catch (error) {
+    console.log("CHANGE PASSWORD ERROR:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+exports.setPassword = async (req, res) => {
+  try {
+
+    const user = await User.findById(req.user._id).select("+password");
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // If password already exists
+    if (user.password) {
+      return res.status(400).json({
+        message: "Password already exists. Use change password."
+      });
+    }
+
+    const { newPassword } = req.body;
+
+    if (!newPassword || newPassword.length < 6) {
+      return res.status(400).json({
+        message: "Password must be at least 6 characters."
+      });
+    }
+
+    user.password = newPassword;
+
+    await user.save();
+
+    res.json({
+      message: "Password added successfully. You can now login with email & password."
+    });
+
+  } catch (error) {
+    console.log("SET PASSWORD ERROR:", error);
+    res.status(500).json({ message: "Failed to set password" });
   }
 };

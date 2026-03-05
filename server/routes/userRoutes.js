@@ -14,12 +14,14 @@ const {
 } = require("../controllers/userController");
 
 const { protect } = require("../middleware/authMiddleware");
+const { changePassword, setPassword } = require("../controllers/userController");
 
 /* ================= PROFILE ================= */
 
 router.get("/profile", protect, getProfile);
 router.put("/profile", protect, updateProfile);
-
+router.put("/change-password", protect, changePassword);
+router.post("/set-password", protect, setPassword);
 /* ================= EMAIL VERIFICATION ================= */
 
 router.post("/verify-email/send-otp", protect, sendEmailOTP);

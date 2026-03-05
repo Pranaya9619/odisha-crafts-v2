@@ -1,10 +1,11 @@
+import SellerNavbar from "../seller/SellerNavbar";
+import SellerFooter from "../seller/SellerFooter";
 import { Outlet } from "react-router-dom";
-import SellerNavbar from "./SellerNavbar";
-import SellerFooter from "./SellerFooter";
 
 const SellerLayout = () => {
   return (
-    <div className="min-h-screen flex flex-col bg-stone-950">
+    <div className="min-h-screen flex flex-col">
+
       <SellerNavbar />
 
       <main className="flex-1">
@@ -12,6 +13,7 @@ const SellerLayout = () => {
       </main>
 
       <SellerFooter />
+
     </div>
   );
 };

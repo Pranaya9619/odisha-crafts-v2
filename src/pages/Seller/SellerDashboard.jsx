@@ -1,80 +1,101 @@
-import React, { useState, useEffect } from "react";
-import ManageArtisans from "./ManageArtisans";
-import ManageProducts from "./ManageProducts";
-import SellerProfile from "./SellerProfile";
-import { useLocation } from "react-router-dom";
+import { NavLink, Outlet, Navigate, useLocation } from "react-router-dom";
+import { LayoutDashboard, User, Users, Package, ShoppingBag, Star, BarChart3, Settings, LogOut } from "lucide-react";
 
 const SellerDashboard = () => {
-    const location = useLocation();
-    const [activeTab, setActiveTab] = useState("artisans");
 
-    // 🔥 Sync tab with URL query
-    useEffect(() => {
-        const params = new URLSearchParams(location.search);
-        const tab = params.get("tab");
+  const location = useLocation();
 
-        if (tab) {
-            setActiveTab(tab);
-        }
-    }, [location.search]);
+  const menu = [
+    { id: "dashboard", label: "Dashboard", icon: LayoutDashboard, path: "/seller/dashboard" },
+    { id: "profile", label: "Profile", icon: User, path: "/seller/profile" },
+    { id: "artisans", label: "Artisans", icon: Users, path: "/seller/artisans" },
+    { id: "products", label: "Products", icon: Package, path: "/seller/products" },
+    { id: "orders", label: "Orders", icon: ShoppingBag, path: "/seller/orders" },
+    { id: "reviews", label: "Reviews", icon: Star, path: "/seller/reviews" },
+    { id: "analytics", label: "Analytics", icon: BarChart3, path: "/seller/analytics" },
+    { id: "settings", label: "Settings", icon: Settings, path: "/seller/settings" },
+  ];
 
-    return (
-        <div className="min-h-screen flex bg-stone-100">
 
-            {/* Sidebar */}
-            <div className="w-64 bg-stone-900 text-white p-6">
-                <h2 className="text-xl font-bold mb-8">Seller Panel</h2>
+  /* ================= LOGOUT ================= */
 
-                <ul className="space-y-4">
-                    <li
-                        onClick={() => {
-                            window.history.replaceState(null, "", "?tab=artisans");
-                            setActiveTab("artisans");
-                        }}
-                        className={`cursor-pointer transition ${activeTab === "artisans"
-                                ? "text-orange-400 font-semibold"
-                                : "hover:text-orange-400"
-                            }`}
-                    >
-                        Artisans
-                    </li>
+  const handleLogout = () => {
+    localStorage.removeItem("sellerToken");
+    window.location.href = "/seller/login";
+  };
 
-                    <li
-                        onClick={() => {
-                            window.history.replaceState(null, "", "?tab=products");
-                            setActiveTab("products");
-                        }}
-                        className={`cursor-pointer transition ${activeTab === "products"
-                                ? "text-orange-400 font-semibold"
-                                : "hover:text-orange-400"
-                            }`}
-                    >
-                        Products
-                    </li>
 
-                    <li
-                        onClick={() => {
-                            window.history.replaceState(null, "", "?tab=profile");
-                            setActiveTab("profile");
-                        }}
-                        className={`cursor-pointer transition ${activeTab === "profile"
-                                ? "text-orange-400 font-semibold"
-                                : "hover:text-orange-400"
-                            }`}
-                    >
-                        Profile
-                    </li>
-                </ul>
-            </div>
+  /* ================= DEFAULT REDIRECT ================= */
 
-            {/* Content */}
-            <div className="flex-1 p-8">
-                {activeTab === "artisans" && <ManageArtisans />}
-                {activeTab === "products" && <ManageProducts />}
-                {activeTab === "profile" && <SellerProfile />}
-            </div>
-        </div>
-    );
+  if (location.pathname === "/seller") {
+    return <Navigate to="/seller/dashboard" replace />;
+  }
+
+
+  return (
+    <div className="flex min-h-[calc(100vh-120px)]">
+
+      {/* Sidebar */}
+
+      <aside className="w-64 bg-stone-900 text-white p-6 flex flex-col">
+
+        <h2 className="text-xl font-semibold mb-8 tracking-wide">
+          Seller Panel
+        </h2>
+
+
+        {/* Menu */}
+
+        <nav className="flex flex-col gap-2 flex-1">
+
+          {menu.map((item) => {
+
+            const Icon = item.icon;
+
+            return (
+              <NavLink
+                key={item.id}
+                to={item.path}
+                className={({ isActive }) =>
+                  `flex items-center gap-3 px-3 py-2 rounded transition ${
+                    isActive
+                      ? "bg-orange-500 text-white"
+                      : "hover:bg-stone-800 text-stone-300"
+                  }`
+                }
+              >
+                <Icon size={18} />
+                {item.label}
+              </NavLink>
+            );
+          })}
+
+        </nav>
+
+
+        {/* Logout */}
+
+        <button
+          onClick={handleLogout}
+          className="flex items-center gap-3 mt-6 px-3 py-2 rounded hover:bg-red-600 bg-red-500"
+        >
+          <LogOut size={18} />
+          Logout
+        </button>
+
+      </aside>
+
+
+      {/* Content */}
+
+      <main className="flex-1 p-8 bg-stone-100 overflow-y-auto">
+
+        <Outlet />
+
+      </main>
+
+    </div>
+  );
 };
 
 export default SellerDashboard;

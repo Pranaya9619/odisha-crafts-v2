@@ -19,12 +19,21 @@ import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import { useAuth } from "./context/AuthContext";
 import OAuthSuccess from "./pages/oAuthSuccess";
-import SellerRegister from "./pages/Seller/SellerRegister";
-import SellerDashboard from "./pages/Seller/SellerDashboard";
 import MainLayout from "./components/layout/MainLayout";
-import SellerLayout from "./components/layout/SellerLayout";
 import Profile from "./pages/Profile";
 import VerifyOTP from "./pages/VerifyOTP";
+import SellerLogin from "./pages/Seller/SellerLogin";
+import SellerDashboard from "./pages/Seller/SellerDashboard";
+import ProtectedSellerRoute from "./components/seller/ProtectedSellerRoute";
+import SellerLayout from "./components/layout/SellerLayout";
+import SellerHome from "./pages/Seller/SellerHome";
+import SellerProfile from "./pages/Seller/SellerProfile";
+import SellerOrders from "./pages/Seller/SellerOrders";
+import SellerReviews from "./pages/Seller/SellerReviews";
+import SellerAnalytics from "./pages/Seller/SellerAnalytics";
+import ArtisanManager from "./components/seller/ArtisanManager";
+import ProductManager from "./components/seller/ProductManager";
+import SellerSettings from "./pages/Seller/SellerSettings";
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -45,10 +54,11 @@ const App = () => {
       <ScrollToTop />
 
       <AnimatePresence mode="wait">
-        <Routes location={location} key={location.pathname}>
+        <Routes location={location}>
 
           {/* 🔵 BUYER SIDE */}
           <Route element={<MainLayout />}>
+            <Route path="/profile" element={<Profile />} />
             <Route path="/" element={<Home />} />
             <Route path="/shop" element={<Shop />} />
             <Route path="/product/:id" element={<ProductDetails />} />
@@ -65,19 +75,31 @@ const App = () => {
             <Route path="/verify-otp" element={<VerifyOTP />} />
           </Route>
 
-          {/* 🟣 SELLER SIDE */}
           <Route element={<SellerLayout />}>
-            <Route path="/seller-register" element={<SellerRegister />} />
-            <Route
-              path="/seller-dashboard"
-              element={
-                localStorage.getItem("sellerToken")
-                  ? <SellerDashboard />
-                  : <Navigate to="/seller-register" />
-              }
-            />
+
+            <Route path="/seller/login" element={<SellerLogin />} />
+
+            <Route element={<ProtectedSellerRoute />}>
+
+              <Route path="/seller" element={<SellerDashboard />}>
+
+                <Route index element={<Navigate to="dashboard" />} />
+
+                <Route path="dashboard" element={<SellerHome />} />
+                <Route path="profile" element={<SellerProfile />} />
+                <Route path="artisans" element={<ArtisanManager />} />
+                <Route path="products" element={<ProductManager />} />
+                <Route path="orders" element={<SellerOrders />} />
+                <Route path="reviews" element={<SellerReviews />} />
+                <Route path="analytics" element={<SellerAnalytics />} />
+                <Route path="settings" element={<SellerSettings />} />
+
+              </Route>
+
+            </Route>
+
           </Route>
-          <Route path="/profile" element={<Profile />} />
+
           <Route path="*" element={<Navigate to="/" />} />
 
         </Routes>

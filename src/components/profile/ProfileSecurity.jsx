@@ -2,8 +2,10 @@ import React, { useState } from "react";
 import API from "../../services/api";
 import { useAuth } from "../../context/AuthContext";
 import { CheckCircle, AlertCircle } from "lucide-react";
+import { useEffect } from "react";
 
 const ProfileSecurity = () => {
+
   const { user, setUser } = useAuth();
 
   const [emailOTP, setEmailOTP] = useState("");
@@ -20,6 +22,116 @@ const ProfileSecurity = () => {
 
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState(null);
+
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+
+  const changePassword = async () => {
+
+    if (!currentPassword || !newPassword || !confirmPassword) {
+      return setMessage({
+        type: "error",
+        text: "Please fill all password fields.",
+      });
+    }
+
+    if (newPassword !== confirmPassword) {
+      return setMessage({
+        type: "error",
+        text: "New passwords do not match.",
+      });
+    }
+
+    if (newPassword.length < 6) {
+      return setMessage({
+        type: "error",
+        text: "Password must be at least 6 characters.",
+      });
+    }
+
+    try {
+
+      setLoading(true);
+
+      const res = await API.put("/users/change-password", {
+        currentPassword,
+        newPassword,
+      });
+
+      setCurrentPassword("");
+      setNewPassword("");
+      setConfirmPassword("");
+
+      setMessage({
+        type: "success",
+        text: res.data.message || "Password changed successfully.",
+      });
+
+    } catch (err) {
+
+      setMessage({
+        type: "error",
+        text: err.response?.data?.message || "Failed to change password.",
+      });
+
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const addPassword = async () => {
+
+    if (!newPassword || !confirmPassword) {
+      return setMessage({
+        type: "error",
+        text: "Please fill all password fields."
+      });
+    }
+
+    if (newPassword !== confirmPassword) {
+      return setMessage({
+        type: "error",
+        text: "Passwords do not match."
+      });
+    }
+
+    if (newPassword.length < 6) {
+      return setMessage({
+        type: "error",
+        text: "Password must be at least 6 characters."
+      });
+    }
+
+    try {
+
+      setLoading(true);
+
+      const res = await API.post("/users/set-password", {
+        newPassword
+      });
+
+      setNewPassword("");
+      setConfirmPassword("");
+
+      setMessage({
+        type: "success",
+        text: res.data.message
+      });
+
+      await refreshUser();
+
+    } catch (err) {
+
+      setMessage({
+        type: "error",
+        text: err.response?.data?.message || "Failed to add password."
+      });
+
+    } finally {
+      setLoading(false);
+    }
+  };
 
   /* ================= VALIDATION HELPERS ================= */
 
@@ -275,20 +387,19 @@ const ProfileSecurity = () => {
   const inputStyle =
     "px-3 py-1.5 text-sm border rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500";
 
+  useEffect(() => {
+
+    if (user) {
+      setPhoneInput(user.phone || "");
+      setEmailInput(user.email || "");
+    }
+
+  }, [user]);
+
   return (
     <div className="space-y-10">
 
-      {message && (
-        <div
-          className={`p-3 rounded-lg text-sm ${
-            message.type === "success"
-              ? "bg-green-50 text-green-700"
-              : "bg-red-50 text-red-600"
-          }`}
-        >
-          {message.text}
-        </div>
-      )}
+
 
       {/* ================= EMAIL ================= */}
 
@@ -461,6 +572,89 @@ const ProfileSecurity = () => {
               Confirm
             </button>
           </div>
+        )}
+      </div>
+
+      {message && (
+        <div
+          className={`p-3 rounded-lg text-sm ${message.type === "success"
+            ? "bg-green-50 text-green-700"
+            : "bg-red-50 text-red-600"
+            }`}
+        >
+          {message.text}
+        </div>
+      )}
+
+      {/* ================= PASSWORD ================= */}
+
+      <div className="border rounded-xl p-6 space-y-3 max-w-md">
+        <h2 className="text-lg font-semibold">Password</h2>
+
+        {!user.passwordSet ? (
+          <>
+            <p className="text-sm text-gray-600">
+              This account uses Google login. Add a password to enable email login.
+            </p>
+
+            <input
+              type="password"
+              placeholder="New Password"
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+              className={`${inputStyle} w-full`}
+            />
+
+            <input
+              type="password"
+              placeholder="Confirm Password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              className={`${inputStyle} w-full`}
+            />
+
+            <button
+              onClick={addPassword}
+              className={btnPrimary}
+              disabled={loading}
+            >
+              Add Password
+            </button>
+          </>
+        ) : (
+          <>
+            <input
+              type="password"
+              placeholder="Current Password"
+              value={currentPassword}
+              onChange={(e) => setCurrentPassword(e.target.value)}
+              className={`${inputStyle} w-full`}
+            />
+
+            <input
+              type="password"
+              placeholder="New Password"
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+              className={`${inputStyle} w-full`}
+            />
+
+            <input
+              type="password"
+              placeholder="Confirm New Password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              className={`${inputStyle} w-full`}
+            />
+
+            <button
+              onClick={changePassword}
+              className={btnPrimary}
+              disabled={loading}
+            >
+              Change Password
+            </button>
+          </>
         )}
       </div>
     </div>

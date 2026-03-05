@@ -3,22 +3,55 @@ const bcrypt = require("bcryptjs");
 
 const sellerSchema = new mongoose.Schema(
   {
-    name: { type: String, required: true },
-    email: { type: String, required: true, unique: true },
-    password: { type: String, required: true },
-    phone: { type: String, required: true },
-    district: { type: String, required: true },
-    craft: { type: String, required: true },
+    name: {
+      type: String,
+      required: true
+    },
+
+    email: {
+      type: String,
+      required: true,
+      unique: true
+    },
+
+    password: {
+      type: String,
+      required: true
+    },
+
+    phone: {
+      type: String,
+      required: true
+    },
+
+    district: {
+      type: String,
+      required: true
+    },
+
+    averageRating: {
+      type: Number,
+      default: 0
+    },
+
+    numReviews: {
+      type: Number,
+      default: 0
+    }
   },
   { timestamps: true }
 );
 
+
 // Hash password
 sellerSchema.pre("save", async function () {
+
   if (!this.isModified("password")) return;
 
   const salt = await bcrypt.genSalt(10);
   this.password = await bcrypt.hash(this.password, salt);
+
 });
+
 
 module.exports = mongoose.model("Seller", sellerSchema);

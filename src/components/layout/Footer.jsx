@@ -16,7 +16,7 @@ const Footer = () => {
   };
 
   const goToSeller = () => {
-    navigate("/seller-register");
+    navigate("/seller/login");
   };
   
   const handleNewsletterSubmit = async (e) => {

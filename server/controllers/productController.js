@@ -28,15 +28,60 @@ exports.getProductById = async (req, res) => {
   }
 };
 
+const Artisan = require("../models/Artisan");
+
 exports.createProduct = async (req, res) => {
   try {
-    const product = await Product.create(req.body);
+
+    if (!req.seller) {
+      return res.status(401).json({
+        message: "Seller not authenticated",
+      });
+    }
+
+    const { artisan, name } = req.body;
+
+    const artisanDoc = await Artisan.findOne({
+      _id: artisan,
+      seller: req.seller._id,
+    });
+
+    if (!artisanDoc) {
+      return res.status(400).json({
+        message: "Invalid artisan selected",
+      });
+    }
+
+    // ⭐ Duplicate product check
+    const existing = await Product.findOne({
+      name,
+      seller: req.seller._id
+    });
+
+    if (existing) {
+      return res.status(400).json({
+        message: "Product with this name already exists"
+      });
+    }
+
+    const product = await Product.create({
+      ...req.body,
+      seller: req.seller._id,
+    });
+
     res.status(201).json(product);
+
   } catch (err) {
-    res.status(400).json({ message: "Invalid Data" });
+
+    console.error("CREATE PRODUCT ERROR:", err);
+
+    res.status(500).json({
+      message: "Failed to create product",
+      error: err.message,
+    });
+
   }
 };
-
 exports.addReview = async (req, res) => {
   try {
     const { rating, comment } = req.body;
@@ -136,4 +181,90 @@ exports.deleteReview = async (req, res) => {
   await product.save();
 
   res.json({ message: "Review deleted" });
+};
+
+exports.getMyProducts = async (req, res) => {
+  try {
+
+    const products = await Product.find({
+      seller: req.seller._id
+    })
+      .populate("artisan", "name district")
+      .sort({ createdAt: -1 });
+
+    res.json(products);
+
+  } catch (err) {
+    res.status(500).json({
+      message: "Failed to fetch products",
+    });
+  }
+};
+
+exports.updateProduct = async (req, res) => {
+  try {
+
+    const product = await Product.findOne({
+      _id: req.params.id,
+      seller: req.seller._id,
+    });
+
+    if (!product) {
+      return res.status(404).json({
+        message: "Product not found",
+      });
+    }
+
+    const allowedFields = [
+      "name",
+      "price",
+      "description",
+      "category",
+      "district",
+      "image",
+      "artisan",
+    ];
+
+    allowedFields.forEach((field) => {
+      if (req.body[field] !== undefined) {
+        product[field] = req.body[field];
+      }
+    });
+
+    const updated = await product.save();
+
+    res.json(updated);
+
+  } catch (err) {
+    res.status(500).json({
+      message: "Update failed",
+    });
+  }
+};
+
+exports.deleteProduct = async (req, res) => {
+  try {
+
+    const product = await Product.findOne({
+      _id: req.params.id,
+      seller: req.seller._id,
+    });
+
+    if (!product) {
+      return res.status(404).json({
+        message: "Product not found",
+      });
+    }
+
+    await product.deleteOne();
+
+    res.json({
+      message: "Product deleted",
+    });
+
+  } catch (err) {
+    res.status(500).json({
+      message: "Delete failed",
+    });
+  }
 };

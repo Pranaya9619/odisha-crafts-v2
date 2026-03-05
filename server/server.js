@@ -6,6 +6,9 @@ const cookieParser = require("cookie-parser");
 const connectDB = require("./config/db");
 require("./config/passport");
 const couponRoutes = require("./routes/couponRoutes");
+const sellerRoutes = require("./routes/sellerRoutes");
+const sellerOrderRoutes = require("./routes/sellerOrderRoutes");
+const sellerAnalyticsRoutes = require("./routes/sellerAnalyticsRoutes");
 
 /* ================= CONNECT DB ================= */
 connectDB();
@@ -27,6 +30,10 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(passport.initialize());
 
+// app.use((req, res, next) => {
+//   console.log(req.method, req.originalUrl);
+//   next();
+// });
 /* ================= ROUTES ================= */
 
 app.use("/api/auth", require("./routes/authRoutes"));
@@ -38,8 +45,11 @@ app.use("/api/categories", require("./routes/categoryRoutes"));
 app.use("/api/districts", require("./routes/districtRoutes"));
 app.use("/api/newsletter", require("./routes/newsletterRoutes"));
 app.use("/api/cart", require("./routes/cartRoutes"));
-app.use("/api/seller", require("./routes/sellerRoutes"));
 app.use("/api/coupons", couponRoutes);
+app.use("/api/seller", sellerRoutes);
+app.use("/api/seller/orders", sellerOrderRoutes);
+app.use("/api/seller/analytics", sellerAnalyticsRoutes);
+app.use("/api/seller/dashboard", require("./routes/sellerDashboardRoutes"));
 
 /* ================= ROOT ================= */
 
