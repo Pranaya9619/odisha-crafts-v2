@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
+
 const Artisan = require("./models/Artisan");
 const Product = require("./models/Product");
 const Seller = require("./models/Seller");
@@ -12,49 +13,65 @@ const seedData = async () => {
     await mongoose.connect(process.env.MONGO_URI);
     console.log("✅ Connected to DB");
 
-    /* ========= CLEAR OLD DATA ========= */
-
+    /* ========= CLEAR ========= */
     await Product.deleteMany();
     await Artisan.deleteMany();
     await Seller.deleteMany();
     await User.deleteMany();
 
-    console.log("🧹 Old data cleared");
+    console.log("🧹 DB cleared");
 
-    /* ========= CREATE SELLER ========= */
-
-    const partnerSeller = await Seller.create({
-      name: "Partner Organisation",
-      email: "partner@odishacrafts.com",
-      password: "123456",
-      phone: "9999999999",
-      district: "Bhubaneswar",
-      craft: "Multi-Craft",
-    });
-
-    console.log("🤝 Seller created");
-
-    /* ========= CREATE 3 USERS ========= */
-
+    /* ========= USERS ========= */
     const users = await User.insertMany([
-      {
-        name: "Aditi Sharma",
-        email: "aditi@example.com",
-        password: "123456",
-      },
-      {
-        name: "Rahul Verma",
-        email: "rahul@example.com",
-        password: "123456",
-      },
-      {
-        name: "Sneha Patel",
-        email: "sneha@example.com",
-        password: "123456",
-      },
+      { name: "Aditi Sharma", email: "aditi@test.com", password: "123456" },
+      { name: "Rahul Verma", email: "rahul@test.com", password: "123456" },
+      { name: "Sneha Patel", email: "sneha@test.com", password: "123456" },
     ]);
 
-    console.log("👥 Users created");
+    /* ========= SELLERS ========= */
+
+    const sellers = [];
+
+    for (const s of [
+      {
+        name: "Pranaya Mallik",
+        email: "admin@test.com",
+        password: "123456",
+        phone: "9999999999",
+        district: "Bhubaneswar",
+        status: "approved",
+        role: "admin",
+        isArchived: false,
+      },
+      {
+        name: "Pattachitra House",
+        email: "pattachitra@test.com",
+        password: "123456",
+        phone: "8888888888",
+        district: "Puri",
+        status: "approved",
+        role: "seller",
+        isArchived: false,
+      },
+      {
+        name: "Ikat Weavers",
+        email: "ikat@test.com",
+        password: "123456",
+        phone: "7777777777",
+        district: "Sambalpur",
+        status: "consent_submitted",
+        role: "seller",
+        isArchived: false,
+        consentForm: {
+          signatureUrl: "https://dummyimage.com/200x80/000/fff&text=Signature",
+        },
+      },
+    ]) {
+      const created = await Seller.create(s); // 🔥 triggers hashing
+      sellers.push(created);
+    }
+
+    const approvedSeller = sellers[1];
 
     /* ========= ARTISANS ========= */
 
@@ -63,67 +80,29 @@ const seedData = async () => {
         name: "Raghunath Mohapatra",
         district: "Puri",
         craft: "Pattachitra",
-        bio: "A third-generation Pattachitra artist known for Krishna Leela scrolls using natural pigments and handmade cloth canvas.",
-        image: "https://www.thegoodloop.com/wp-content/uploads/2022/01/akhil-pawar-XCd_6nOdzjo-unsplash-1160x754.jpeg",
-        quote: "Art is devotion. Every stroke is an offering.",
-        experience: "30+ Years",
-        seller: partnerSeller._id,
-      },
-      {
-        name: "Gopal Chitrakar",
-        district: "Raghurajpur",
-        craft: "Pattachitra",
-        bio: "Traditional Chitrakar specializing in palm leaf engraving and mythological storytelling art.",
-        image: "https://media.licdn.com/dms/image/v2/D4D12AQFsK_G3iOWSLg/article-cover_image-shrink_720_1280/article-cover_image-shrink_720_1280/0/1702122874916?e=2147483647&v=beta&t=GnyGY55ijUMYZjI9dqn5BDTCCaHYJVsoCNGr_MmowYE",
-        quote: "Stories of the gods live through our hands.",
-        experience: "22 Years",
-        seller: partnerSeller._id,
+        bio: "Master Pattachitra artist creating mythological scrolls.",
+        image: "https://via.placeholder.com/300",
+        seller: approvedSeller._id,
       },
       {
         name: "Sukanti Das",
         district: "Sambalpur",
         craft: "Sambalpuri Ikat",
-        bio: "Expert Ikat weaver preserving ancient Bandha techniques through vibrant handwoven textiles.",
-        image: "https://s7d1.scene7.com/is/image/wbcollab/shutterstock_551163163?qlt=90&fmt=webp&resMode=sharp2",
-        quote: "Weaving is patience woven into color.",
-        experience: "18 Years",
-        seller: partnerSeller._id,
+        bio: "Expert Ikat weaver preserving Bandha techniques.",
+        image: "https://via.placeholder.com/300",
+        seller: approvedSeller._id,
       },
       {
         name: "Bibhuti Tarakasi",
         district: "Cuttack",
         craft: "Silver Filigree",
-        bio: "Master Tarakasi craftsman creating delicate silver filigree ornaments and heritage jewelry.",
-        image: "https://rangde.imgix.net/images/fund-page/artisans/artisans-ts-react-2.jpg?auto=compress,format",
-        quote: "Silver bends, but tradition never does.",
-        experience: "25 Years",
-        seller: partnerSeller._id,
-      },
-      {
-        name: "Pratima Nayak",
-        district: "Keonjhar",
-        craft: "Terracotta",
-        bio: "Creates handcrafted terracotta sculptures inspired by tribal folklore and rural Odisha traditions.",
-        image: "https://cdn.shopify.com/s/files/1/0281/8729/5828/files/Leshemi_7_Process_Weaving_LESHEMI-80_15x10_300_1024x1024.jpg?v=1596651748",
-        quote: "Clay remembers the stories of our land.",
-        experience: "15 Years",
-        seller: partnerSeller._id,
-      },
-      {
-        name: "Anita Behera",
-        district: "Bhubaneswar",
-        craft: "Palm Engraving",
-        bio: "Talapatra Chitra specialist engraving scriptures and mythological scenes onto palm leaves.",
-        image: "https://images.yourstory.com/cs/wordpress/2018/07/rendered.jpg?mode=crop&crop=faces&ar=2%3A1&format=auto&w=1920&q=85",
-        quote: "Every engraving is a whisper from the past.",
-        experience: "20 Years",
-        seller: partnerSeller._id,
+        bio: "Tarakasi craftsman specializing in silver jewelry.",
+        image: "https://via.placeholder.com/300",
+        seller: approvedSeller._id,
       },
     ]);
 
-    console.log("🎨 Artisans inserted");
-
-    /* ========= REVIEW TEMPLATE ========= */
+    /* ========= REVIEWS ========= */
 
     const makeReviews = () => {
       const reviews = [
@@ -131,19 +110,13 @@ const seedData = async () => {
           user: users[0]._id,
           name: users[0].name,
           rating: 5,
-          comment: "Absolutely stunning craftsmanship. Worth every rupee.",
+          comment: "Insane quality 🔥",
         },
         {
           user: users[1]._id,
           name: users[1].name,
           rating: 4,
-          comment: "Authentic work and neatly packed.",
-        },
-        {
-          user: users[2]._id,
-          name: users[2].name,
-          rating: 5,
-          comment: "Feels like owning a piece of Odisha’s heritage.",
+          comment: "Very authentic",
         },
       ];
 
@@ -159,108 +132,44 @@ const seedData = async () => {
 
     /* ========= PRODUCTS ========= */
 
-    const productsData = [
-    {
-      name: "Krishna Leela Scroll",
-      price: 4500,
-      image: "https://www.memeraki.com/cdn/shop/files/Story-of-Shri-Krishna--CHERIYAL-SCROLL-PAINTING-BY-SAI-KIRAN-1_900x.png?v=1726244017",
-      category: "Pattachitra",
-      district: "Puri",
-      description: "Hand-painted natural pigment scroll depicting Krishna Leela.",
-      artisan: artisans[0]._id,
-    },
-    {
-      name: "Dasavatara Panel Art",
-      price: 5200,
-      image: "https://prettyhomesindia.com/cdn/shop/files/6_ba930cd8-91ed-4cef-8207-b791cef64094.jpg?v=1731334450",
-      category: "Pattachitra",
-      district: "Raghurajpur",
-      description: "Traditional Dasavatara narrative in classical Pattachitra style.",
-      artisan: artisans[1]._id,
-    },
-    {
-      name: "Red Sambalpuri Saree",
-      price: 6800,
-      image: "https://goswadeshi.in/cdn/shop/files/tri3d__2007__all_set0_nomo_folded2__2025-3-12-18-0-46__1000x1200_e473e793-7ad4-4417-b4ba-5ac5b06a4c56.jpg?v=1744017409",
-      category: "Sambalpuri Ikat",
-      district: "Sambalpur",
-      description: "Traditional red Ikat saree with temple motifs and handwoven detailing.",
-      artisan: artisans[2]._id,
-    },
-    {
-      name: "Blue Ikat Dupatta",
-      price: 2400,
-      image: "https://www.maatshi.com/cdn/shop/files/ON776-01_e1557bea-73f0-43bf-b57c-3703bb63961b.jpg?v=1752929439&width=1600",
-      category: "Sambalpuri Ikat",
-      district: "Sambalpur",
-      description: "Elegant handwoven Ikat dupatta made using Bandha weaving technique.",
-      artisan: artisans[2]._id,
-    },
-    {
-      name: "Silver Peacock Brooch",
-      price: 3800,
-      image: "https://rukmini1.flixcart.com/image/1500/1500/xif0q/brooch/r/s/g/rhinestone-silver-peacock-brooch-for-blazers-coats-men-women-1-original-imahgfx6xdyzdhz2.jpeg?q=70",
-      category: "Silver Filigree",
-      district: "Cuttack",
-      description: "Intricate Tarakasi silver filigree peacock brooch handcrafted in Cuttack.",
-      artisan: artisans[3]._id,
-    },
-    {
-      name: "Filigree Necklace",
-      price: 7200,
-      image: "https://i.etsystatic.com/34190809/r/il/e87cba/3825565857/il_1588xN.3825565857_1jkj.jpg",
-      category: "Silver Filigree",
-      district: "Cuttack",
-      description: "Traditional handcrafted silver necklace with fine wire detailing.",
-      artisan: artisans[3]._id,
-    },
-    {
-      name: "Terracotta Horse",
-      price: 2100,
-      image: "https://bongoniketan.in/cdn/shop/files/BengalhandmadeterracottaartifactproductfromPanchmura_Bishnupur_Bankura_WestBengalbyBONGONIKETAN12_36e47071-ca55-4945-b3e6-b35165bd7788.jpg?v=1717744396&width=990",
-      category: "Terracotta",
-      district: "Keonjhar",
-      description: "Traditional handmade terracotta horse sculpture symbolizing rural heritage.",
-      artisan: artisans[4]._id,
-    },
-    {
-      name: "Palm Leaf Manuscript",
-      price: 3000,
-      image: "https://storeassets.im-cdn.com/media-manager/palmleafinnovations/tdwJJx76Qe9PZXNMKX6u_1_0x0_webp.jpg",
-      category: "Palm Engraving",
-      district: "Puri",
-      description: "Engraved palm leaf manuscript featuring mythological scenes.",
-      artisan: artisans[0]._id,
-    },
-    {
-      name: "Palm Engraved Bookmark",
-      price: 950,
-      image: "https://i.etsystatic.com/27368197/r/il/72ccb4/3802978965/il_1588xN.3802978965_r9zu.jpg",
-      category: "Palm Engraving",
-      district: "Bhubaneswar",
-      description: "Minimal engraved palm leaf bookmark with traditional motifs.",
-      artisan: artisans[5]._id,
-    },
-  ];
-
-    
-
-    const products = productsData.map((p) => {
-      const reviewData = makeReviews();
-
-      return {
-        ...p,
-        seller: partnerSeller._id,
-        ...reviewData,
-      };
-    });
+    const products = [
+      {
+        name: "Krishna Leela Scroll",
+        price: 4500,
+        category: "Pattachitra",
+        district: "Puri",
+        artisan: artisans[0]._id,
+        seller: approvedSeller._id,
+        isArchived: false,
+      },
+      {
+        name: "Ikat Saree",
+        price: 6500,
+        category: "Sambalpuri Ikat",
+        district: "Sambalpur",
+        artisan: artisans[1]._id,
+        seller: approvedSeller._id,
+        isArchived: false,
+      },
+      {
+        name: "Silver Necklace",
+        price: 7200,
+        category: "Silver Filigree",
+        district: "Cuttack",
+        artisan: artisans[2]._id,
+        seller: approvedSeller._id,
+        isArchived: true, // 🔥 archived product
+      },
+    ].map(p => ({
+      ...p,
+      ...makeReviews(),
+    }));
 
     await Product.insertMany(products);
 
-    console.log("🛍 Products inserted with real users + reviews");
-    console.log("🚀 FULLY SEEDED SUCCESSFULLY");
-
+    console.log("🚀 SEEDED PERFECTLY");
     process.exit();
+
   } catch (err) {
     console.error("❌ Seed error:", err);
     process.exit(1);

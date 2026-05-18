@@ -71,23 +71,33 @@ const userSchema = new mongoose.Schema(
 
     /* ================= EMAIL OTP ================= */
 
-      emailOTP: {
-        type: String,
-      },
+    emailOTP: {
+      type: String,
+    },
 
-      emailOTPExpires: {
-        type: Date,
-      },
+    emailOTPExpires: {
+      type: Date,
+    },
 
-      /* ================= PHONE OTP ================= */
+    /* ================= PHONE OTP ================= */
 
-      phoneOTP: {
-        type: String,
-      },
+    phoneOTP: {
+      type: String,
+    },
 
-      phoneOTPExpires: {
-        type: Date,
-      },
+    phoneOTPExpires: {
+      type: Date,
+    },
+
+    /* ================= RESET PASSWORD OTP ================= */
+
+    forgotPasswordOTP: {
+      type: String,
+    },
+
+    forgotPasswordOTPExpires: {
+      type: Date,
+    },
 
     /* ================= PROFILE ================= */
 
@@ -137,6 +147,13 @@ userSchema.methods.comparePassword = async function (enteredPassword) {
 userSchema.methods.clearExpiredOTPs = function () {
   const now = Date.now();
 
+  if (
+    this.forgotPasswordOTPExpires &&
+    this.forgotPasswordOTPExpires < now
+  ) {
+    this.forgotPasswordOTP = undefined;
+    this.forgotPasswordOTPExpires = undefined;
+  }
   if (this.emailOTPExpires && this.emailOTPExpires < now) {
     this.emailOTP = undefined;
     this.emailOTPExpires = undefined;

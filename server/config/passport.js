@@ -1,6 +1,7 @@
 const passport = require("passport");
 const GoogleStrategy = require("passport-google-oauth20").Strategy;
 const User = require("../models/User");
+const Seller = require("../models/Seller");
 
 passport.use(
   new GoogleStrategy(
@@ -40,11 +41,122 @@ passport.use(
   )
 );
 
+/* =========================================================
+   SELLER GOOGLE AUTH
+========================================================= */
+
+passport.use(
+  "seller-google",
+  new GoogleStrategy(
+    {
+      clientID: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+
+      callbackURL:
+        "http://localhost:5000/api/seller/google/callback",
+    },
+
+    async (
+      accessToken,
+      refreshToken,
+      profile,
+      done
+    ) => {
+
+      try {
+
+        const email =
+          profile.emails?.[0]?.value;
+
+        if (!email) {
+          return done(
+            new Error("Google email missing"),
+            null
+          );
+        }
+
+        // 🔥 FIND EXISTING SELLER
+        let seller = await Seller.findOne({
+          email,
+        });
+
+        /* =================================================
+           EXISTING SELLER
+        ================================================= */
+
+        if (seller) {
+
+          // 🔗 MERGE GOOGLE ACCOUNT
+          if (!seller.googleId) {
+
+            seller.googleId = profile.id;
+
+            seller.authProvider = "google";
+
+            await seller.save();
+          }
+
+        } else {
+
+          /* =============================================
+             CREATE NEW SELLER
+          ============================================= */
+
+          seller = await Seller.create({
+
+            email,
+
+            name:
+              profile.displayName || "",
+
+            googleId: profile.id,
+
+            authProvider: "google",
+
+            onboardingCompleted: false,
+
+            onboardingStep: 1,
+
+            status: "onboarding",
+          });
+        }
+
+        done(null, seller);
+
+      } catch (err) {
+
+        console.error(
+          "SELLER GOOGLE AUTH ERROR:",
+          err
+        );
+
+        done(err, null);
+
+      }
+    }
+  )
+);
+
 passport.serializeUser((user, done) => {
   done(null, user.id);
 });
 
 passport.deserializeUser(async (id, done) => {
-  const user = await User.findById(id);
-  done(null, user);
+  try {
+
+    // 🔍 Try normal user first
+    let account = await User.findById(id);
+
+    // 🛍️ If not found, try seller
+    if (!account) {
+      account = await Seller.findById(id);
+    }
+
+    done(null, account);
+
+  } catch (err) {
+
+    done(err, null);
+
+  }
 });

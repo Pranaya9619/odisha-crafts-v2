@@ -18,6 +18,7 @@ const ProfileAddresses = () => {
   const [form, setForm] = useState(emptyForm);
   const [editingId, setEditingId] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const refreshProfile = async () => {
     const res = await API.get("/users/profile");
@@ -38,21 +39,76 @@ const ProfileAddresses = () => {
 
   const handleSubmit = async () => {
     try {
+
+      setError("");
+
+      const requiredFields = [
+        form.fullName,
+        form.phone,
+        form.street,
+        form.city,
+        form.state,
+        form.pincode,
+      ];
+
+      const hasEmptyField = requiredFields.some(
+        (field) => !field?.trim()
+      );
+
+      if (hasEmptyField) {
+        setError(
+          "Please fill all the address fields."
+        );
+        return;
+      }
+
       setLoading(true);
 
       if (editingId) {
-        await API.put(`/users/address/${editingId}`, form);
+        await API.put(
+          `/users/address/${editingId}`,
+          form
+        );
       } else {
-        await API.post("/users/address", form);
+        await API.post(
+          "/users/address",
+          form
+        );
       }
 
       await refreshProfile();
+
       setForm(emptyForm);
       setEditingId(null);
+
     } catch {
-      alert("Address save failed");
+
+      setError(
+        "Could not save address right now."
+      );
+
     } finally {
+
       setLoading(false);
+
+    }
+  };
+
+  const handleSetDefault = async (id) => {
+    try {
+
+      await API.put(
+        `/users/address/${id}/default`
+      );
+
+      await refreshProfile();
+
+    } catch {
+
+      setError(
+        "Could not update default address."
+      );
+
     }
   };
 
@@ -100,19 +156,31 @@ const ProfileAddresses = () => {
                 {addr.street}, {addr.city}, {addr.state} - {addr.pincode}
               </p>
 
-              <div className="flex gap-4 pt-3 text-sm">
+              <div className="flex gap-4 pt-3 text-sm flex-wrap">
+
+                {!addr.isDefault && (
+                  <button
+                    onClick={() => handleSetDefault(addr._id)}
+                    className="text-green-600 hover:underline"
+                  >
+                    Set Default
+                  </button>
+                )}
+
                 <button
                   onClick={() => handleEdit(addr)}
                   className="text-orange-600 hover:underline"
                 >
                   Edit
                 </button>
+
                 <button
                   onClick={() => handleDelete(addr._id)}
                   className="text-red-500 hover:underline"
                 >
                   Delete
                 </button>
+
               </div>
             </motion.div>
           ))}
@@ -143,6 +211,16 @@ const ProfileAddresses = () => {
           />
           Set as default address
         </label>
+
+        {error && (
+          <motion.p
+            initial={{ opacity: 0, y: -5 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-sm text-red-500"
+          >
+            {error}
+          </motion.p>
+        )}
 
         <div className="flex gap-4">
           <button

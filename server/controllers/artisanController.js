@@ -116,3 +116,19 @@ exports.deleteArtisan = async (req, res) => {
     res.status(500).json({ message: "Delete failed" });
   }
 };
+
+exports.getFeaturedArtisans = async (req, res) => {
+  try {
+    const artisans = await Artisan.find({ featured: true });
+
+    res.status(200).json({
+      success: true,
+      artisans,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};

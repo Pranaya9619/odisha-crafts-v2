@@ -2,7 +2,7 @@ const User = require("../models/User");
 const crypto = require("crypto");
 const sendEmail = require("../utils/sendEmail");
 const bcrypt = require("bcryptjs");
-
+const jwt = require("jsonwebtoken");
 /* ================= GET PROFILE ================= */
 
 exports.getProfile = async (req, res) => {
@@ -274,21 +274,31 @@ exports.updateAddress = async (req, res) => {
 
 exports.deleteAddress = async (req, res) => {
   try {
-    const user = await User.findById(req.user._id);
 
-    const address = user.addresses.id(req.params.id);
+    const user = await User.findById(
+      req.user._id
+    );
 
-    if (!address) {
-      return res.status(404).json({ message: "Address not found" });
-    }
-
-    address.remove();
+    user.addresses = user.addresses.filter(
+      (addr) =>
+        addr._id.toString() !== req.params.id
+    );
 
     await user.save();
 
-    res.json({ message: "Address deleted", addresses: user.addresses });
+    res.json({
+      message: "Address deleted",
+      addresses: user.addresses,
+    });
+
   } catch (error) {
-    res.status(500).json({ message: "Failed to delete address" });
+
+    console.log("DELETE ADDRESS ERROR:", error);
+
+    res.status(500).json({
+      message: "Failed to delete address",
+    });
+
   }
 };
 
@@ -310,7 +320,7 @@ exports.changePassword = async (req, res) => {
 
     const currentPassword = req.body.currentPassword?.trim();
     const newPassword = req.body.newPassword?.trim();
-    console.log("Incoming currentPassword:", `"${currentPassword}"`);
+    // console.log("Incoming currentPassword:", `"${currentPassword}"`);
     const isMatch = await bcrypt.compare(currentPassword, user.password);
 
     if (!isMatch) {
@@ -374,5 +384,183 @@ exports.setPassword = async (req, res) => {
   } catch (error) {
     console.log("SET PASSWORD ERROR:", error);
     res.status(500).json({ message: "Failed to set password" });
+  }
+};
+
+/* ================= FORGOT PASSWORD OTP ================= */
+
+exports.sendForgotPasswordOTP = async (req, res) => {
+  try {
+
+    const { email } = req.body;
+
+    const user = await User.findOne({
+      email: email.toLowerCase(),
+    });
+
+    if (!user) {
+      return res.status(404).json({
+        message: "No account found with this email."
+      });
+    }
+
+    const rawOTP =
+      crypto.randomInt(100000, 999999).toString();
+
+    const hashedOTP =
+      await bcrypt.hash(rawOTP, 10);
+
+    user.forgotPasswordOTP = hashedOTP;
+
+    user.forgotPasswordOTPExpires =
+      Date.now() + 5 * 60 * 1000;
+
+    await user.save();
+
+    await sendEmail({
+      to: user.email,
+      subject: "OdishaCrafts Password Reset OTP",
+      html: `
+        <h2>Password Reset OTP</h2>
+
+        <p>Your OTP is:</p>
+
+        <h1>${rawOTP}</h1>
+
+        <p>This OTP expires in 5 minutes.</p>
+      `,
+    });
+
+    res.json({
+      message: "OTP sent to email."
+    });
+
+  } catch (error) {
+
+    console.log("FORGOT OTP ERROR:", error);
+
+    res.status(500).json({
+      message: "Failed to send OTP."
+    });
+  }
+};
+
+/* ================= RESET PASSWORD ================= */
+
+exports.resetPasswordWithOTP = async (req, res) => {
+  try {
+
+    const {
+      email,
+      otp,
+      password,
+    } = req.body;
+
+    const user = await User.findOne({
+      email: email.toLowerCase(),
+    }).select("+password");
+
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found."
+      });
+    }
+
+    user.clearExpiredOTPs();
+
+    if (
+      !user.forgotPasswordOTP ||
+      !user.forgotPasswordOTPExpires
+    ) {
+      return res.status(400).json({
+        message: "OTP expired."
+      });
+    }
+
+    const isMatch =
+      await bcrypt.compare(
+        otp,
+        user.forgotPasswordOTP
+      );
+
+    if (!isMatch) {
+      return res.status(400).json({
+        message: "Invalid OTP."
+      });
+    }
+
+    if (!password || password.length < 6) {
+      return res.status(400).json({
+        message:
+          "Password must be at least 6 characters."
+      });
+    }
+
+    user.password = password;
+
+    user.forgotPasswordOTP = undefined;
+    user.forgotPasswordOTPExpires = undefined;
+
+    await user.save();
+
+    res.json({
+      message: "Password reset successful."
+    });
+
+  } catch (error) {
+
+    console.log("RESET PASSWORD ERROR:", error);
+
+    res.status(500).json({
+      message: "Failed to reset password."
+    });
+  }
+};
+
+exports.setDefaultAddress = async (
+  req,
+  res
+) => {
+  try {
+
+    const user = await User.findById(
+      req.user._id
+    );
+
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found",
+      });
+    }
+
+    user.addresses.forEach((addr) => {
+      addr.isDefault = false;
+    });
+
+    const selectedAddress =
+      user.addresses.id(req.params.id);
+
+    if (!selectedAddress) {
+      return res.status(404).json({
+        message: "Address not found",
+      });
+    }
+
+    selectedAddress.isDefault = true;
+
+    await user.save();
+
+    res.json({
+      message:
+        "Default address updated",
+    });
+
+  } catch {
+
+    res.status(500).json({
+      message:
+        "Failed to update default address",
+    });
+
   }
 };

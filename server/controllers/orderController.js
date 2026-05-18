@@ -20,7 +20,11 @@ async function updateProductSales(cart) {
 
     await Product.findByIdAndUpdate(
       item.product._id,
-      { $inc: { sales: item.quantity } }
+      {
+        $inc: {
+          sales: item.quantity,
+        },
+      },
     );
 
   }
@@ -38,6 +42,30 @@ exports.createOrder = async (req, res) => {
 
     if (!user.cart.length)
       return res.status(400).json({ message: "Cart is empty" });
+
+    for (const item of user.cart) {
+
+      if (item.quantity > item.product.stock) {
+        return res.status(400).json({
+          message: `${item.product.name} is out of stock`,
+        });
+      }
+
+    }
+
+    /* ================= SELECTED ADDRESS CHECK ================= */
+
+    const { addressId } = req.body;
+
+    const selectedAddress = user.addresses.find(
+      (address) => address._id.toString() === addressId
+    );
+
+    if (!selectedAddress) {
+      return res.status(400).json({
+        message: "Please select a valid delivery address",
+      });
+    }
 
     /* ================= RECALCULATE TOTAL ================= */
 
@@ -95,6 +123,7 @@ exports.createOrder = async (req, res) => {
       const order = await Order.create({
         user: user._id,
         items: orderItems,
+        shippingAddress: selectedAddress,
         totalAmount: 0,
         paymentMethod: "coupon",
         paymentStatus: "paid",
@@ -122,6 +151,7 @@ exports.createOrder = async (req, res) => {
       const order = await Order.create({
         user: user._id,
         items: orderItems,
+        shippingAddress: selectedAddress,
         totalAmount: total,
         paymentMethod: "cod",
         paymentStatus: "pending",
@@ -152,6 +182,7 @@ exports.createOrder = async (req, res) => {
     const order = await Order.create({
       user: user._id,
       items: orderItems,
+      shippingAddress: selectedAddress,
       totalAmount: total,
       paymentMethod: "razorpay",
       paymentStatus: "pending",
@@ -245,7 +276,9 @@ exports.getCurrentOrders = async (req, res) => {
 
   const orders = await Order.find({
     user: req.user._id,
-    orderStatus: { $ne: "delivered" },
+    orderStatus: {
+      $in: ["placed", "processing", "shipped"]
+    },
   })
     .populate("items.product")
     .sort({ createdAt: -1 });
@@ -262,7 +295,9 @@ exports.getPastOrders = async (req, res) => {
 
   const orders = await Order.find({
     user: req.user._id,
-    orderStatus: "delivered",
+    orderStatus: {
+      $in: ["delivered", "cancelled"]
+    },
   })
     .populate("items.product")
     .sort({ createdAt: -1 });

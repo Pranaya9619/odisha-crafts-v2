@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import API from "../../services/api";
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 
 const StatusBadge = ({ status }) => {
   const base = "text-xs px-2 py-1 rounded-full font-medium";
@@ -24,6 +25,7 @@ const ProfileOrders = () => {
   const [activeTab, setActiveTab] = useState("current");
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   const fetchOrders = async (type) => {
     try {
@@ -101,7 +103,8 @@ const ProfileOrders = () => {
                 {order.items.map((item, index) => (
                   <div
                     key={index}
-                    className="flex items-center gap-5 bg-gray-50 rounded-xl p-4 hover:shadow-md transition"
+                    onClick={() => navigate(`/product/${item.product?._id}`)}
+                    className="flex items-center gap-5 bg-gray-50 rounded-xl p-4 hover:shadow-md hover:scale-[1.01] transition cursor-pointer"
                   >
                     {/* IMAGE */}
                     <div className="w-20 h-20 rounded-lg overflow-hidden bg-white shadow-sm">

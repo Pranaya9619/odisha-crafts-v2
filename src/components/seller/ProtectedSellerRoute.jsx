@@ -1,49 +1,186 @@
-import { Navigate, Outlet } from "react-router-dom";
-import { useEffect, useState } from "react";
+import {
+  Navigate,
+  Outlet,
+  useLocation,
+} from "react-router-dom";
+
+import {
+  useEffect,
+  useState,
+} from "react";
+
 import API from "../../services/sellerApi";
 
-const ProtectedSellerRoute = () => {
+import RestrictedAccess from "./RestrictedAccess";
 
-  const [loading, setLoading] = useState(true);
-  const [authenticated, setAuthenticated] = useState(false);
 
-  useEffect(() => {
+const ProtectedSellerRoute =
+  () => {
 
-    const checkAuth = async () => {
-      try {
+    const [
+      loading,
+      setLoading,
+    ] = useState(true);
 
-        await API.get("/seller/me");
-        setAuthenticated(true);
+    const [
+      authenticated,
+      setAuthenticated,
+    ] = useState(false);
 
-      } catch {
+    const [
+      seller,
+      setSeller,
+    ] = useState(null);
 
-        setAuthenticated(false);
+    const location =
+      useLocation();
 
-      } finally {
+    /* =====================================================
+       AUTH CHECK
+    ===================================================== */
 
-        setLoading(false);
+    useEffect(() => {
 
-      }
-    };
+      const checkAuth =
+        async () => {
 
-    checkAuth();
+          try {
 
-  }, []);
+            const res =
+              await API.get(
+                "/seller/me"
+              );
 
-  if (loading) {
-    return (
-      <div className="p-10 text-gray-600">
-        Checking seller session...
-      </div>
-    );
-  }
+            setSeller(
+              res.data
+            );
 
-  if (!authenticated) {
-    return <Navigate to="/seller/login" />;
-  }
+            setAuthenticated(
+              true
+            );
 
-  return <Outlet />;
+          } catch {
 
-};
+            setAuthenticated(
+              false
+            );
 
-export default ProtectedSellerRoute;
+          } finally {
+
+            setLoading(
+              false
+            );
+
+          }
+        };
+
+      checkAuth();
+
+    }, []);
+
+    /* =====================================================
+       LOADING
+    ===================================================== */
+
+    if (loading) {
+
+      return (
+        <div className="min-h-screen flex items-center justify-center bg-stone-50">
+
+          <div className="text-center">
+
+            <div className="w-14 h-14 border-4 border-orange-500 border-t-transparent rounded-full animate-spin mx-auto mb-5" />
+
+            <p className="text-stone-600 font-medium">
+              Checking seller session...
+            </p>
+
+          </div>
+
+        </div>
+      );
+
+    }
+
+    /* =====================================================
+       NOT AUTHENTICATED
+    ===================================================== */
+
+    if (!authenticated) {
+
+      return (
+        <Navigate
+          to="/seller/login"
+          replace
+        />
+      );
+
+    }
+
+    /* =====================================================
+       BLOCK ONBOARDING ACCESS FOR COMPLETED SELLERS
+    ===================================================== */
+
+    if (
+      seller?.onboardingCompleted &&
+      location.pathname.startsWith(
+        "/seller/onboarding"
+      )
+    ) {
+
+      return (
+        <Navigate
+          to="/seller/dashboard"
+          replace
+        />
+      );
+
+    }
+
+    /* =====================================================
+       FORCE ONBOARDING FLOW
+    ===================================================== */
+
+    if (
+      !seller?.onboardingCompleted &&
+      !location.pathname.startsWith(
+        "/seller/onboarding"
+      )
+    ) {
+
+      return (
+        <Navigate
+          to={`/seller/onboarding/step-${
+            seller?.onboardingStep ||
+            1
+          }`}
+          replace
+        />
+      );
+
+    }
+
+    /* =====================================================
+       APPROVED SELLERS → FULL ACCESS
+    ===================================================== */
+
+    if (
+      seller?.status ===
+        "approved" &&
+      seller?.onboardingCompleted
+    ) {
+
+      return <Outlet />;
+
+    }
+
+    /* =====================================================
+       DEFAULT ACCESS
+    ===================================================== */
+
+    return <Outlet />;
+
+  };
+
+export default
+  ProtectedSellerRoute;

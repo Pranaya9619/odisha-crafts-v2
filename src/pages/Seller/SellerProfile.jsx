@@ -7,7 +7,8 @@ const SellerProfile = () => {
     name: "",
     email: "",
     phone: "",
-    district: "",
+    storeName: "",
+    businessAddress: "",
   });
 
   const [originalSeller, setOriginalSeller] = useState({});
@@ -168,19 +169,36 @@ const SellerProfile = () => {
             />
           </div>
 
-
-
-          {/* DISTRICT */}
+          {/* STORE NAME */}
 
           <div>
             <label className="block text-sm font-medium mb-1">
-              District
+              Store Name
             </label>
 
             <input
               type="text"
-              name="district"
-              value={seller.district}
+              name="storeName"
+              value={seller.storeName}
+              onChange={handleChange}
+              disabled={!editing}
+              className="w-full border rounded px-3 py-2 disabled:bg-gray-100"
+              required
+            />
+          </div>
+
+
+          {/* BUSINESS ADDRESS */}
+
+          <div>
+            <label className="block text-sm font-medium mb-1">
+              Business Address
+            </label>
+
+            <input
+              type="text"
+              name="businessAddress"
+              value={seller.businessAddress}
               onChange={handleChange}
               disabled={!editing}
               className="w-full border rounded px-3 py-2 disabled:bg-gray-100"

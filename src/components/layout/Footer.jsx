@@ -1,6 +1,12 @@
 import React, { useState } from "react";
-import { Instagram, Youtube, Twitter } from "lucide-react";
+import {
+  Instagram,
+  Youtube,
+  Twitter,
+} from "lucide-react";
+
 import { useNavigate } from "react-router-dom";
+
 import API from "../../services/api";
 
 const Footer = () => {
@@ -10,24 +16,25 @@ const Footer = () => {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState(null);
 
-  const goToShop = (params = {}) => {
-    const query = new URLSearchParams(params).toString();
-    navigate(query ? `/shop?${query}` : "/shop");
-  };
-
   const goToSeller = () => {
     navigate("/seller/login");
   };
-  
-  const handleNewsletterSubmit = async (e) => {
+
+  const handleNewsletterSubmit = async (
+    e
+  ) => {
     e.preventDefault();
+
     if (!email.trim()) return;
 
     try {
       setLoading(true);
       setMessage(null);
 
-      await API.post("/newsletter", { email });
+      await API.post(
+        "/newsletter",
+        { email }
+      );
 
       setMessage({
         type: "success",
@@ -47,163 +54,180 @@ const Footer = () => {
     }
   };
 
-  const categories = [
-    "Palm Engraving",
-    "Pattachitra",
-    "Sambalpuri Ikat",
-    "Silver Filigree",
-    "Terracotta",
-  ];
-
-  const districts = [
-    "Bhubaneswar",
-    "Cuttack",
-    "Keonjhar",
-    "Puri",
-    "Raghurajpur",
-    "Sambalpur",
-  ];
-
   return (
-    <footer className="bg-stone-950 text-stone-400 py-16 border-t border-stone-900">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-12">
+    <footer className="relative overflow-hidden bg-gradient-to-b from-[#120d08] via-[#140d08] to-black text-stone-400 border-t border-stone-900">
 
-        {/* Brand */}
-        <div>
-          <h2 className="text-white text-2xl font-serif font-bold mb-4">
-            OdishaCrafts
-          </h2>
+      {/* Glow Effects */}
+      <div className="absolute top-0 left-0 w-72 h-72 bg-orange-900/10 blur-3xl rounded-full"></div>
 
-          <p className="text-sm leading-relaxed mb-6">
-            A digital initiative connecting the world with the timeless
-            heritage of Odisha’s master artisans.
-          </p>
+      <div className="absolute bottom-0 right-0 w-96 h-96 bg-orange-700/10 blur-3xl rounded-full"></div>
 
-          <div className="flex space-x-4">
-            {[
-              { Icon: Instagram, link: "https://www.instagram.com/" },
-              { Icon: Youtube, link: "https://www.youtube.com/" },
-              { Icon: Twitter, link: "https://twitter.com/" },
-            ].map(({ Icon, link }, i) => (
-              <a
-                key={i}
-                href={link}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-9 h-9 flex items-center justify-center bg-stone-800 rounded-full hover:bg-orange-700 transition-colors"
+      {/* MAIN */}
+      <div className="relative z-10 max-w-7xl mx-auto px-6 sm:px-8 lg:px-10 py-16">
+
+        {/* TOP */}
+        <div className="grid grid-cols-1 lg:grid-cols-[1.3fr_1fr] gap-14 items-start">
+
+          {/* LEFT */}
+          <div>
+
+            <h2 className="text-white text-5xl font-serif font-bold tracking-tight mb-6 leading-none">
+              Odisha
+              <span className="text-orange-500">
+                Crafts
+              </span>
+            </h2>
+
+            <p className="text-[17px] leading-9 text-stone-400 max-w-2xl">
+              OdishaCrafts is a digital initiative dedicated to
+              preserving and celebrating the timeless artistic
+              heritage of Odisha. From the intricate brushwork of
+              Pattachitra to the woven poetry of Sambalpuri Ikat,
+              we connect master artisans and age-old traditions
+              with a global audience that values authenticity,
+              craftsmanship, and cultural storytelling. Every
+              creation carries generations of skill, patience,
+              and identity — handcrafted not merely as products,
+              but as living expressions of Odisha’s soul. Through
+              thoughtful design, ethical collaboration, and
+              modern technology, we aim to empower artisan
+              communities, sustain traditional livelihoods, and
+              ensure these extraordinary crafts continue to
+              inspire future generations across the world.
+            </p>
+
+            {/* Socials */}
+            <div className="flex items-center gap-5 mt-10">
+
+              {[
+                {
+                  Icon: Instagram,
+                  link: "https://www.instagram.com/",
+                },
+                {
+                  Icon: Youtube,
+                  link: "https://www.youtube.com/",
+                },
+                {
+                  Icon: Twitter,
+                  link: "https://twitter.com/",
+                },
+              ].map(({ Icon, link }, i) => (
+                <a
+                  key={i}
+                  href={link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-12 h-12 flex items-center justify-center bg-white/5 border border-white/10 rounded-full hover:bg-orange-700 hover:border-orange-600 hover:scale-110 transition-all duration-300"
+                >
+                  <Icon size={20} />
+                </a>
+              ))}
+
+            </div>
+          </div>
+
+          {/* RIGHT */}
+          <div className="flex flex-col gap-8">
+
+            {/* NEWSLETTER */}
+            <div className="rounded-3xl border border-white/10 bg-white/[0.04] backdrop-blur-md p-8">
+
+              <h3 className="text-white font-semibold mb-4 uppercase text-sm tracking-[0.3em]">
+                Newsletter
+              </h3>
+
+              <p className="text-[15px] leading-7 mb-6 text-stone-400">
+                Letters from the looms.
+                <br />
+                Stories from the soil.
+              </p>
+
+              <form
+                onSubmit={
+                  handleNewsletterSubmit
+                }
+                className="flex overflow-hidden rounded-2xl border border-white/10 bg-black/20"
               >
-                <Icon size={16} />
-              </a>
-            ))}
+
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) =>
+                    setEmail(
+                      e.target.value
+                    )
+                  }
+                  placeholder="Email Address"
+                  required
+                  className="bg-transparent px-5 py-4 w-full text-sm text-white placeholder:text-stone-500 focus:outline-none"
+                />
+
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="bg-orange-700 text-white px-7 py-4 font-semibold hover:bg-orange-600 transition-all duration-300 disabled:opacity-60"
+                >
+                  {loading
+                    ? "..."
+                    : "Join"}
+                </button>
+
+              </form>
+
+              {message && (
+                <p
+                  className={`text-xs mt-3 ${message.type ===
+                      "success"
+                      ? "text-green-400"
+                      : "text-red-400"
+                    }`}
+                >
+                  {message.text}
+                </p>
+              )}
+
+            </div>
+
+            {/* SELLER */}
+            <div className="rounded-3xl border border-white/10 bg-white/[0.04] backdrop-blur-md p-8">
+
+              <h3 className="text-white text-2xl font-semibold leading-snug mb-4">
+                Sell on OdishaCrafts
+              </h3>
+
+              <p className="text-[15px] leading-8 text-stone-400 mb-7">
+                Share your craft with the world.
+                Join our growing artisan
+                marketplace.
+              </p>
+
+              <button
+                onClick={goToSeller}
+                className="w-full bg-gradient-to-r from-orange-700 to-orange-500 text-white py-4 rounded-2xl text-[15px] font-semibold hover:scale-[1.02] hover:shadow-2xl hover:shadow-orange-900/30 transition-all duration-300"
+              >
+                Become a Seller
+              </button>
+
+            </div>
           </div>
         </div>
 
-        {/* Discover by Craft */}
-        <div>
-          <h3 className="text-white font-bold mb-4 uppercase text-xs tracking-wider">
-            Discover by Craft
-          </h3>
+        {/* DIVIDER */}
+        <div className="mt-14 border-t border-white/10"></div>
 
-          <ul className="space-y-2 text-sm">
-            {categories.map((category) => (
-              <li key={category}>
-                <button
-                  onClick={() => goToShop({ category })}
-                  className="hover:text-orange-500 transition-colors"
-                >
-                  {category}
-                </button>
-              </li>
-            ))}
-          </ul>
-        </div>
+        {/* BOTTOM */}
+        <div className="pt-7 flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-stone-500">
 
-        {/* Explore by District */}
-        <div>
-          <h3 className="text-white font-bold mb-4 uppercase text-xs tracking-wider">
-            Explore by District
-          </h3>
-
-          <ul className="space-y-2 text-sm">
-            {districts.map((district) => (
-              <li key={district}>
-                <button
-                  onClick={() => goToShop({ district })}
-                  className="hover:text-orange-500 transition-colors"
-                >
-                  {district}
-                </button>
-              </li>
-            ))}
-          </ul>
-        </div>
-
-        {/* Newsletter */}
-        <div>
-          <h3 className="text-white font-bold mb-4 uppercase text-xs tracking-wider">
-            Newsletter
-          </h3>
-
-          <p className="text-xs mb-4">
-            Letters from the looms. Stories from the soil.
+          <p>
+            © {new Date().getFullYear()} OdishaCrafts.
           </p>
 
-          <form onSubmit={handleNewsletterSubmit} className="flex">
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="Email Address"
-              required
-              className="bg-stone-900 border-none rounded-l-md px-4 py-2 w-full text-sm focus:ring-1 focus:ring-orange-700 outline-none"
-            />
-
-            <button
-              type="submit"
-              disabled={loading}
-              className="bg-orange-700 text-white px-4 py-2 rounded-r-md font-medium text-sm hover:bg-orange-600 transition-colors disabled:opacity-60"
-            >
-              {loading ? "..." : "Join"}
-            </button>
-          </form>
-
-          {message && (
-            <p
-              className={`text-xs mt-3 ${
-                message.type === "success"
-                  ? "text-green-400"
-                  : "text-red-400"
-              }`}
-            >
-              {message.text}
-            </p>
-          )}
-        </div>
-
-        {/* Sell on OdishaCrafts */}
-        <div>
-          <h3 className="text-white font-bold mb-4 uppercase text-xs tracking-wider">
-            Sell on OdishaCrafts
-          </h3>
-
-          <p className="text-sm mb-4">
-            Share your craft with the world. Join our growing artisan marketplace.
+          <p>
+            Preserving heritage through digital craftsmanship.
           </p>
 
-          <button
-            onClick={goToSeller}
-            className="bg-orange-700 text-white px-5 py-2 rounded-md text-sm font-medium hover:bg-orange-600 transition-colors"
-          >
-            Become a Seller
-          </button>
         </div>
-      </div>
-
-      {/* Bottom Strip */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-16 pt-8 border-t border-stone-900 text-center text-xs">
-        <p>
-          &copy; {new Date().getFullYear()} OdishaCrafts. Built with ❤️ for Odisha.
-        </p>
       </div>
     </footer>
   );

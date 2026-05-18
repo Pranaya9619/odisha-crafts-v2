@@ -106,6 +106,16 @@ const Login = () => {
               placeholder="Enter your password"
             />
 
+            <div className="flex justify-end -mt-2">
+              <button
+                type="button"
+                onClick={() => navigate("/forgot-password")}
+                className="text-sm text-orange-600 hover:text-orange-700 hover:underline font-medium"
+              >
+                Forgot Password?
+              </button>
+            </div>
+
             {errorMessage && (
               <p className="text-sm text-red-500 -mt-3">
                 {errorMessage}

@@ -140,10 +140,7 @@ exports.getRevenueChart = async (req, res) => {
 
     orders.forEach(order => {
 
-      const date = order.createdAt.toLocaleDateString("en-IN", {
-        day: "numeric",
-        month: "short"
-      });
+      const date = order.createdAt.toISOString().split("T")[0];
 
       let dailyRevenue = 0;
 

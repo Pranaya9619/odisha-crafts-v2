@@ -7,7 +7,7 @@ const MainLayout = () => {
     <div className="font-sans text-stone-800 bg-stone-50 min-h-screen flex flex-col">
       <Navbar />
 
-      <main className="flex-grow overflow-hidden">
+      <main className="flex-grow overflow-hidden pt-24">
         <Outlet />
       </main>
 

@@ -8,12 +8,15 @@ const {
   getArtisanById,
   updateArtisan,
   deleteArtisan,
+  getFeaturedArtisans,
 } = require("../controllers/artisanController");
 
 const { protectSeller } = require("../middleware/sellerAuthMiddleware");
 
 // Public artisan routes
 router.get("/", getAllArtisans);
+
+router.get("/featured", getFeaturedArtisans);
 
 // Seller dashboard routes
 router.get("/my", protectSeller, getMyArtisans);

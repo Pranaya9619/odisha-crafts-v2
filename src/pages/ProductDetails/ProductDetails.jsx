@@ -259,9 +259,11 @@ const ProductDetails = () => {
             </div>
 
             {/* Estimated Delivery */}
-            <p className="text-sm text-stone-500 mb-3">
-              🚚 Estimated Delivery: {estimatedDays}–{estimatedDays + 1} days
-            </p>
+            {user?.addresses?.length > 0 && (
+              <p className="text-sm text-stone-500 mb-3">
+                🚚 Estimated Delivery: {estimatedDays}–{estimatedDays + 1} days
+              </p>
+            )}
 
             {/* Back to Shop */}
             <button
@@ -407,8 +409,11 @@ const ProductDetails = () => {
           <div className="space-y-6">
             {reviews.map((review) => {
               const isOwner =
-                review.user === user?._id ||
-                review.user?._id === user?._id;
+                user &&
+                (
+                  review.user?.toString() === user._id?.toString() ||
+                  review.user?._id?.toString() === user._id?.toString()
+                );
 
               return (
                 <div

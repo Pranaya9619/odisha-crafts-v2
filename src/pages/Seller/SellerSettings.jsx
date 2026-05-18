@@ -81,12 +81,24 @@ const SellerSettings = () => {
           required
         />
 
-        <button
-          type="submit"
-          className="bg-black text-white px-6 py-3 rounded hover:bg-gray-800"
-        >
-          Update Password
-        </button>
+        <div className="flex items-center gap-3">
+
+          <button
+            type="submit"
+            className="bg-black text-white px-6 py-3 rounded hover:bg-gray-800 transition"
+          >
+            Update Password
+          </button>
+
+          <button
+            type="button"
+            onClick={() => window.location.href = "/seller-forgot-password"}
+            className="border border-gray-300 px-6 py-3 rounded hover:bg-gray-100 transition"
+          >
+            Forgot Password?
+          </button>
+
+        </div>
 
       </form>
 

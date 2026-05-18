@@ -53,10 +53,16 @@ const productSchema = new mongoose.Schema(
     required: true,
   },
 
-  /* NEW FIELD FOR ANALYTICS */
+  /* 🔥 ANALYTICS */
   sales: {
     type: Number,
     default: 0,
+  },
+
+  /* 🔥 NEW: Soft Archive */
+  isArchived: {
+    type: Boolean,
+    default: false,
   },
 
   reviews: [reviewSchema],

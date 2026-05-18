@@ -52,6 +52,29 @@ exports.updateOrderStatus = async (req, res) => {
       });
     }
 
+    /* ================= REDUCE STOCK WHEN SHIPPED ================= */
+
+    if (
+      status === "shipped" &&
+      order.orderStatus !== "shipped"
+    ) {
+
+      for (const item of order.items) {
+
+        await Product.findByIdAndUpdate(
+          item.product,
+          {
+            $inc: {
+              stock: -item.quantity,
+              sales: item.quantity,
+            },
+          }
+        );
+
+      }
+
+    }
+
     order.orderStatus = status;
 
     await order.save();

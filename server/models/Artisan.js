@@ -18,6 +18,11 @@ const artisanSchema = new mongoose.Schema(
       ref: "Seller",
       required: true,
     },
+
+     featured: {
+      type: Boolean,
+      default: false,
+    },
   },
   { timestamps: true }
 );

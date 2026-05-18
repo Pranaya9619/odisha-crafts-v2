@@ -45,7 +45,7 @@ const SellerHome = () => {
           revenue: res.data.totalRevenue,
           orders: res.data.totalOrders,
           products: res.data.totalProducts,
-          rating: 0
+          rating: 0,
         });
 
         setRecentOrders(res.data.recentOrders || []);
@@ -86,7 +86,6 @@ const SellerHome = () => {
     { label: "Revenue", value: `₹${stats.revenue}`, key: "revenue" },
     { label: "Orders", value: stats.orders, key: "orders" },
     { label: "Products", value: stats.products, key: "products" },
-    { label: "Rating", value: stats.rating, key: "rating" },
   ];
 
   return (
@@ -108,7 +107,7 @@ const SellerHome = () => {
 
       {/* Stats */}
 
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
 
         {statCards.map((stat, index) => {
 
@@ -153,7 +152,15 @@ const SellerHome = () => {
 
             <CartesianGrid strokeDasharray="3 3" />
 
-            <XAxis dataKey="date" />
+            <XAxis
+              dataKey="date"
+              tickFormatter={(value) =>
+                new Date(value).toLocaleDateString("en-IN", {
+                  day: "numeric",
+                  month: "short",
+                })
+              }
+            />
 
             <YAxis />
 

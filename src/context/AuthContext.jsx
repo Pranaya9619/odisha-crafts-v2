@@ -12,23 +12,63 @@ export const AuthProvider = ({ children }) => {
   /* ================= AUTO REFRESH ================= */
 
   useEffect(() => {
+
+    // ✅ SKIP CUSTOMER AUTH ON SELLER ROUTES
+    if (
+
+      window.location.pathname.startsWith("/seller") ||
+
+      window.location.pathname.startsWith("/admin")
+
+    ) {
+
+      setLoading(false);
+      return;
+
+    }
+
     const refreshAuth = async () => {
+
       try {
-        const res = await API.post("/auth/refresh");
 
-        setAccessToken(res.data.accessToken);
+        const res =
+          await API.post(
+            "/auth/refresh"
+          );
 
-        const profile = await API.get("/users/profile");
-        setUser(profile.data);
+        setAccessToken(
+          res.data.accessToken
+        );
+
+        const profile =
+          await API.get(
+            "/users/profile"
+          );
+
+        setUser(
+          profile.data
+        );
 
       } catch (err) {
+
+        console.warn(
+          "Auth refresh failed:",
+          err.response?.data ||
+          err.message
+        );
+
         setUser(null);
+
       } finally {
+
         setLoading(false);
+
       }
+
     };
 
     refreshAuth();
+
   }, []);
 
   /* ================= LOGIN ================= */
@@ -44,7 +84,7 @@ export const AuthProvider = ({ children }) => {
     // 🔥 Fetch full profile after login
     const profile = await API.get("/users/profile");
     setUser(profile.data);
-    
+
     return res.data;
   };
 
@@ -57,7 +97,7 @@ export const AuthProvider = ({ children }) => {
         {},
         { withCredentials: true }
       );
-    } catch (err) {}
+    } catch (err) { }
 
     setAccessToken(null);
     setUser(null);

@@ -15,7 +15,7 @@ const SellerNavbar = () => {
     <nav className="bg-black text-white px-6 py-3 flex justify-between items-center">
 
       {/* Logo */}
-      <Link to="/seller/dashboard" className="flex items-center gap-2">
+      <Link to="/" className="flex items-center gap-2">
         <Store className="text-orange-500" size={22} />
         <span className="font-semibold text-lg">OdishaCrafts</span>
       </Link>
@@ -24,7 +24,7 @@ const SellerNavbar = () => {
       <div className="flex gap-6 items-center text-sm">
 
         <Link
-          to="/marketplace"
+          to="/"
           className="flex items-center gap-1 hover:text-orange-400 transition"
         >
           <ShoppingBag size={16} />
