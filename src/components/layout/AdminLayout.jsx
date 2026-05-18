@@ -27,12 +27,12 @@ const AdminLayout = () => {
   return (
     <div className="flex min-h-screen bg-gray-100">
 
-      {/* 🔥 SIDEBAR */}
+      {/* SIDEBAR */}
       <div className="w-64 bg-black text-white p-6 flex flex-col">
 
         <div>
           <h1 className="text-xl font-bold mb-8">
-            Admin Panel 👑
+            Admin Panel
           </h1>
 
           <nav className="flex flex-col gap-2">

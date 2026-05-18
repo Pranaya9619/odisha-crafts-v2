@@ -16,6 +16,8 @@ const sellerOrderRoutes = require("./routes/sellerOrderRoutes");
 const sellerAnalyticsRoutes = require("./routes/sellerAnalyticsRoutes");
 const adminRoutes = require("./routes/adminRoutes");
 const artisanRoutes = require("./routes/artisanRoutes");
+const featuredArtisanRoutes =
+require("./routes/featuredArtisanRoutes");
 
 /* ================= CONNECT DB ================= */
 
@@ -144,6 +146,10 @@ app.use(
 );
 
 app.use("/api/artisans", artisanRoutes);
+app.use(
+  "/api/featured-artisans",
+  featuredArtisanRoutes
+);
 
 /* ================= ROOT ================= */
 

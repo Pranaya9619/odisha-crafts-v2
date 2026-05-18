@@ -93,8 +93,8 @@ const Impact = () => {
               <div className="relative aspect-square overflow-hidden">
 
                 <img
-                  src={artisan.image}
-                  alt={artisan.name}
+                  src={artisan.artisanId.image}
+                  alt={artisan.artisanId.name}
                   className="w-full h-full object-cover
         group-hover:scale-110 transition-transform duration-700"
                 />
@@ -105,11 +105,11 @@ const Impact = () => {
                 <div className="absolute bottom-5 left-5">
 
                   <p className="text-orange-400 text-sm mb-1">
-                    {artisan.craft}
+                    {artisan.artisanId.craft}
                   </p>
 
                   <h4 className="text-2xl font-bold">
-                    {artisan.name}
+                    {artisan.artisanId.name}
                   </h4>
 
                 </div>
@@ -119,25 +119,26 @@ const Impact = () => {
 
                 <div className="flex items-center gap-2 text-sm text-stone-400 mb-4">
                   <MapPin size={16} />
-                  {artisan.district}, Odisha
+                  {artisan.artisanId.district}, Odisha
                 </div>
 
                 <p className="text-stone-300 leading-relaxed mb-6">
-                  {artisan.bio}
+                  {artisan.artisanId.bio}
                 </p>
 
-                <button
+                <Link
+                  to={`/featured-artisans/${artisan.artisanId._id}`}
                   className="text-orange-400 hover:text-orange-300
-        transition-colors font-medium"
+  transition-colors font-medium"
                 >
                   Read Story →
-                </button>
+                </Link>
 
               </div>
             </motion.div>
           ))}
 
-          {/* FEATURED ARTISANS */}
+          {/* FEATURED ARTISANS
           <motion.div
             initial={{ opacity: 0, y: 40 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -169,173 +170,69 @@ const Impact = () => {
               className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8"
             >
 
-              {/* CARD 1 */}
-              <motion.div
-                variants={fadeUp}
-                whileHover={{ y: -8 }}
-                className="group bg-stone-800 rounded-3xl overflow-hidden
-      border border-stone-700 hover:border-orange-500/40
-      transition-all duration-500"
-              >
+              {artisans?.map((artisan) => (
 
-                <div className="relative aspect-square overflow-hidden">
+                <motion.div
+                  key={artisan._id}
+                  variants={fadeUp}
+                  whileHover={{ y: -8 }}
+                  className="group bg-stone-800 rounded-3xl overflow-hidden
+    border border-stone-700 hover:border-orange-500/40
+    transition-all duration-500"
+                >
 
-                  <img
-                    src="https://images.unsplash.com/photo-1517048676732-d65bc937f952?q=80&w=1200&auto=format&fit=crop"
-                    alt="Artisan"
-                    className="w-full h-full object-cover
-          group-hover:scale-110 transition-transform duration-700"
-                  />
+                  <div className="relative aspect-square overflow-hidden">
 
-                  <div className="absolute inset-0 bg-gradient-to-t 
-        from-black via-black/30 to-transparent" />
+                    <img
+                      src={artisan.artisanId.image}
+                      alt={artisan.artisanId.name}
+                      className="w-full h-full object-cover
+        group-hover:scale-110 transition-transform duration-700"
+                    />
 
-                  <div className="absolute bottom-5 left-5">
-                    <p className="text-orange-400 text-sm mb-1">
-                      Pattachitra Artist
+                    <div className="absolute inset-0 bg-gradient-to-t 
+      from-black via-black/30 to-transparent" />
+
+                    <div className="absolute bottom-5 left-5">
+
+                      <p className="text-orange-400 text-sm mb-1">
+                        {artisan.artisanId.craft}
+                      </p>
+
+                      <h4 className="text-2xl font-bold">
+                        {artisan.artisanId.name}
+                      </h4>
+
+                    </div>
+                  </div>
+
+                  <div className="p-6">
+
+                    <div className="flex items-center gap-2 text-sm text-stone-400 mb-4">
+                      <MapPin size={16} />
+                      {artisan.artisanId.district}, Odisha
+                    </div>
+
+                    <p className="text-stone-300 leading-relaxed mb-6">
+                      {artisan.artisanId.bio}
                     </p>
 
-                    <h4 className="text-2xl font-bold">
-                      Madhab Maharana
-                    </h4>
-                  </div>
-                </div>
+                    <Link
+                      to={`/featured-artisans/${artisan.artisanId._id}`}
+                      className="text-orange-400 hover:text-orange-300
+        transition-colors font-medium"
+                    >
+                      Read Story →
+                    </Link>
 
-                <div className="p-6">
-
-                  <div className="flex items-center gap-2 text-sm text-stone-400 mb-4">
-                    <MapPin size={16} />
-                    Raghurajpur, Odisha
                   </div>
 
-                  <p className="text-stone-300 leading-relaxed mb-6">
-                    Madhab has spent decades preserving Odisha’s ancient
-                    storytelling traditions through intricate hand-painted
-                    Pattachitra scrolls passed down through generations.
-                  </p>
+                </motion.div>
 
-                  <button
-                    className="text-orange-400 hover:text-orange-300
-          transition-colors font-medium"
-                  >
-                    Read Story →
-                  </button>
-
-                </div>
-              </motion.div>
-
-              {/* CARD 2 */}
-              <motion.div
-                variants={fadeUp}
-                whileHover={{ y: -8 }}
-                className="group bg-stone-800 rounded-3xl overflow-hidden
-      border border-stone-700 hover:border-orange-500/40
-      transition-all duration-500"
-              >
-
-                <div className="relative aspect-square overflow-hidden">
-
-                  <img
-                    src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=1200&auto=format&fit=crop"
-                    alt="Artisan"
-                    className="w-full h-full object-cover
-          group-hover:scale-110 transition-transform duration-700"
-                  />
-
-                  <div className="absolute inset-0 bg-gradient-to-t 
-        from-black via-black/30 to-transparent" />
-
-                  <div className="absolute bottom-5 left-5">
-                    <p className="text-orange-400 text-sm mb-1">
-                      Terracotta Sculptor
-                    </p>
-
-                    <h4 className="text-2xl font-bold">
-                      Sabitri Dei
-                    </h4>
-                  </div>
-                </div>
-
-                <div className="p-6">
-
-                  <div className="flex items-center gap-2 text-sm text-stone-400 mb-4">
-                    <MapPin size={16} />
-                    Balangir, Odisha
-                  </div>
-
-                  <p className="text-stone-300 leading-relaxed mb-6">
-                    Sabitri transforms raw earth into sacred terracotta
-                    forms inspired by village rituals and Odisha’s
-                    timeless folk traditions.
-                  </p>
-
-                  <button
-                    className="text-orange-400 hover:text-orange-300
-          transition-colors font-medium"
-                  >
-                    Read Story →
-                  </button>
-
-                </div>
-              </motion.div>
-
-              {/* CARD 3 */}
-              <motion.div
-                variants={fadeUp}
-                whileHover={{ y: -8 }}
-                className="group bg-stone-800 rounded-3xl overflow-hidden
-      border border-stone-700 hover:border-orange-500/40
-      transition-all duration-500"
-              >
-
-                <div className="relative aspect-square overflow-hidden">
-
-                  <img
-                    src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=1200&auto=format&fit=crop"
-                    alt="Artisan"
-                    className="w-full h-full object-cover
-          group-hover:scale-110 transition-transform duration-700"
-                  />
-
-                  <div className="absolute inset-0 bg-gradient-to-t 
-        from-black via-black/30 to-transparent" />
-
-                  <div className="absolute bottom-5 left-5">
-                    <p className="text-orange-400 text-sm mb-1">
-                      Sambalpuri Weaver
-                    </p>
-
-                    <h4 className="text-2xl font-bold">
-                      Ramesh Meher
-                    </h4>
-                  </div>
-                </div>
-
-                <div className="p-6">
-
-                  <div className="flex items-center gap-2 text-sm text-stone-400 mb-4">
-                    <MapPin size={16} />
-                    Bargarh, Odisha
-                  </div>
-
-                  <p className="text-stone-300 leading-relaxed mb-6">
-                    Every Ikat weave created by Ramesh reflects weeks of
-                    precision, rhythm, and inherited artistry woven into
-                    every thread.
-                  </p>
-
-                  <button
-                    className="text-orange-400 hover:text-orange-300
-          transition-colors font-medium"
-                  >
-                    Read Story →
-                  </button>
-
-                </div>
-              </motion.div>
+              ))}
 
             </motion.div>
-          </motion.div>
+          </motion.div> */}
 
           {/* ARTICLES SECTION */}
           <motion.div

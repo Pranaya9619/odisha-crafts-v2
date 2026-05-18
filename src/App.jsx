@@ -102,6 +102,9 @@ import SellerForgotPassword from "./pages/Seller/SellerForgotPassword";
 import Articles from "./pages/Articles/Articles";
 import ArticleDetails from "./pages/Articles/ArticleDetails";
 
+import FeaturedArtisanDetails
+  from "./pages/Artisans/FeaturedArtisanDetails";
+
 function ScrollToTop() {
 
   const { pathname } =
@@ -251,6 +254,13 @@ const App = () => {
           <Route
             path="/articles/:slug"
             element={<ArticleDetails />}
+          />
+
+          <Route
+            path="/featured-artisans/:id"
+            element={
+              <FeaturedArtisanDetails />
+            }
           />
 
           {/* SELLER */}
