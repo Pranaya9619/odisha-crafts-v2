@@ -68,7 +68,7 @@ const artisans = [
     district: "Puri",
     craft: "Pattachitra",
 
-    bio: "Traditional Pattachitra artist preserving Odisha heritage through handmade paintings.",
+    bio: "Traditional Pattachitra artist preserving Odisha heritage.",
 
     image: "/uploads/artisans/artisan1.jpg",
 
@@ -84,7 +84,7 @@ const artisans = [
     district: "Sambalpur",
     craft: "Sambalpuri Ikat",
 
-    bio: "Expert handloom artisan crafting authentic Sambalpuri Ikat sarees.",
+    bio: "Expert artisan crafting authentic Sambalpuri Ikat sarees.",
 
     image: "/uploads/artisans/artisan2.jpg",
 
@@ -100,7 +100,7 @@ const artisans = [
     district: "Cuttack",
     craft: "Silver Filigree",
 
-    bio: "Master silver filigree craftsman known for intricate handcrafted jewelry.",
+    bio: "Master silver filigree craftsman from Odisha.",
 
     image: "/uploads/artisans/artisan3.jpg",
 
@@ -125,13 +125,11 @@ const products = [
     district: "Puri",
 
     description:
-      "Hand-painted Krishna Leela artwork crafted using natural colors and traditional techniques.",
+      "Hand-painted Krishna Leela artwork using traditional Odisha techniques.",
 
     stock: 12,
 
     sales: 34,
-
-    featured: true,
 
     averageRating: 4.8,
 
@@ -150,13 +148,11 @@ const products = [
     district: "Sambalpur",
 
     description:
-      "Authentic Sambalpuri Ikat saree woven with traditional Odisha craftsmanship.",
+      "Authentic Sambalpuri Ikat saree woven by skilled artisans.",
 
     stock: 20,
 
     sales: 27,
-
-    featured: true,
 
     averageRating: 4.7,
 
@@ -175,13 +171,11 @@ const products = [
     district: "Cuttack",
 
     description:
-      "Elegant handcrafted silver filigree necklace inspired by peacock motifs.",
+      "Elegant handcrafted silver filigree necklace inspired by peacocks.",
 
     stock: 8,
 
     sales: 15,
-
-    featured: true,
 
     averageRating: 4.9,
 
