@@ -35,7 +35,7 @@ import {
   useAuth,
 } from "./context/AuthContext";
 
-import OAuthSuccess from "./pages/OAuthSuccess";
+import oAuthSuccess from "./pages/oAuthSuccess";
 
 import MainLayout from "./components/layout/MainLayout";
 

@@ -5,7 +5,7 @@ import { useAuth } from "../context/AuthContext";
 import { useStore } from "../context/StoreContext";
 import API, { setAccessToken } from "../services/api";
 
-const OAuthSuccess = () => {
+const oAuthSuccess = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
 
@@ -57,4 +57,4 @@ const OAuthSuccess = () => {
   );
 };
 
-export default OAuthSuccess;
+export default oAuthSuccess;
