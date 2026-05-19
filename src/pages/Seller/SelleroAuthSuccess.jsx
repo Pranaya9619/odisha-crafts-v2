@@ -5,7 +5,7 @@ import {
   useSearchParams,
 } from "react-router-dom";
 
-const SellerOAuthSuccess = () => {
+const SelleroAuthSuccess = () => {
 
   const navigate =
     useNavigate();
@@ -47,4 +47,4 @@ const SellerOAuthSuccess = () => {
 
 };
 
-export default SellerOAuthSuccess;
+export default SelleroAuthSuccess;

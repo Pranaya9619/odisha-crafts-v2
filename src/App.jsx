@@ -94,7 +94,7 @@ import AdminLogin from "./pages/Admin/AdminLogin";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 
-import SellerOAuthSuccess from "./pages/Seller/SellerOAuthSuccess";
+import SelleroAuthSuccess from "./pages/Seller/SelleroAuthSuccess";
 
 import Unsubscribe from "./pages/Unsubscribe";
 import SellerForgotPassword from "./pages/Seller/SellerForgotPassword";
@@ -226,7 +226,7 @@ const App = () => {
             <Route
               path="/oauth-success"
               element={
-                <OAuthSuccess />
+                <oAuthSuccess />
               }
             />
 
@@ -280,7 +280,7 @@ const App = () => {
 
             <Route
               path="/seller/oauth-success"
-              element={<SellerOAuthSuccess />}
+              element={<SelleroAuthSuccess />}
             />
 
             <Route
