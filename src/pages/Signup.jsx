@@ -165,7 +165,7 @@ const Signup = () => {
               whileTap={{ scale: 0.97 }}
               type="button"
               onClick={() => {
-                window.location.href = "http://localhost:5000/api/auth/google";
+                window.location.href = `${import.meta.env.VITE_API_BASE_URL}/api/auth/google`;
               }}
               className="flex items-center justify-center gap-3 border border-gray-300 py-3 rounded-xl font-medium hover:bg-gray-50 transition shadow-sm"
             >

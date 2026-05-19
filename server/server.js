@@ -27,9 +27,14 @@ const app = express();
 
 /* ================= MIDDLEWARE ================= */
 
+app.set("trust proxy", 1);
+
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: [
+      "http://localhost:5173",
+      "https://odisha-crafts-v2.vercel.app",
+    ],
     credentials: true,
     methods: [
       "GET",
@@ -88,10 +93,10 @@ app.use(
   require("./routes/productRoutes")
 );
 
-app.use(
-  "/api/artisans",
-  require("./routes/artisanRoutes")
-);
+// app.use(
+//   "/api/artisans",
+//   require("./routes/artisanRoutes")
+// );
 
 app.use(
   "/api/categories",

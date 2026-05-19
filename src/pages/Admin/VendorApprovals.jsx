@@ -643,7 +643,7 @@ const VendorApprovals =
 
                           {v.gstFile && (
                             <a
-                              href={`http://localhost:5000/${v.gstFile}`}
+                              href={`${import.meta.env.VITE_API_BASE_URL}/${v.gstFile}`}
                               target="_blank"
                               rel="noreferrer"
                               className="border border-stone-200 rounded-2xl bg-white p-4 hover:border-orange-400 transition"
@@ -664,7 +664,7 @@ const VendorApprovals =
 
                           {v.aadharFile && (
                             <a
-                              href={`http://localhost:5000/${v.aadharFile}`}
+                              href={`${import.meta.env.VITE_API_BASE_URL}/${v.aadharFile}`}
                               target="_blank"
                               rel="noreferrer"
                               className="border border-stone-200 rounded-2xl bg-white p-4 hover:border-orange-400 transition"
@@ -685,7 +685,7 @@ const VendorApprovals =
 
                           {v.panFile && (
                             <a
-                              href={`http://localhost:5000/${v.panFile}`}
+                              href={`${import.meta.env.VITE_API_BASE_URL}/${v.panFile}`}
                               target="_blank"
                               rel="noreferrer"
                               className="border border-stone-200 rounded-2xl bg-white p-4 hover:border-orange-400 transition"

@@ -7,10 +7,22 @@ const Newsletter = require("../models/Newsletter");
 router.post("/", subscribe);
 
 router.get("/", protect, async (req, res) => {
-  const subscribers = await Newsletter.find({ isSubscribed: true })
-    .sort({ createdAt: -1 });
+  try {
 
-  res.json(subscribers);
+    const subscribers =
+      await Newsletter.find({
+        isSubscribed: true,
+      }).sort({ createdAt: -1 });
+
+    res.json(subscribers);
+
+  } catch (error) {
+
+    res.status(500).json({
+      message: "Failed to fetch subscribers",
+    });
+
+  }
 });
 
 router.get("/unsubscribe", async (req, res) => {
@@ -19,21 +31,21 @@ router.get("/unsubscribe", async (req, res) => {
 
     if (!email) {
       return res.redirect(
-        "http://localhost:5173/unsubscribe?status=error"
+        `${process.env.CLIENT_URL}/unsubscribe?status=error`
       );
     }
 
     await Newsletter.findOneAndDelete({ email });
 
     return res.redirect(
-      `http://localhost:5173/unsubscribe?status=success&email=${email}`
+      `${process.env.CLIENT_URL}/unsubscribe?status=success&email=${email}`
     );
 
   } catch (error) {
     console.error(error);
 
     return res.redirect(
-      "http://localhost:5173/unsubscribe?status=error"
+      `${process.env.CLIENT_URL}/unsubscribe?status=error`
     );
   }
 });

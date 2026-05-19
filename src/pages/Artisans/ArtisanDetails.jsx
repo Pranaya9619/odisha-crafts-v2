@@ -31,7 +31,7 @@ const ArtisanDetails = () => {
     const fetchStory = async () => {
         try {
             const res = await fetch(
-                `http://localhost:5000/api/artisan-stories/${id}`
+                `${import.meta.env.VITE_API_BASE_URL}/api/artisan-stories/${id}`
             );
 
             const data = await res.json();
@@ -62,7 +62,7 @@ const ArtisanDetails = () => {
                     <div>
 
                         <img
-                            src={artisan.image}
+                            src={`${import.meta.env.VITE_API_BASE_URL}/${artisan.image}`}
                             alt={artisan.name}
                             className="w-full h-[650px] object-cover rounded-3xl"
                         />

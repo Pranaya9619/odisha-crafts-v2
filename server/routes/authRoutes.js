@@ -57,8 +57,8 @@ router.get(
 
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
-      secure: false,
-      sameSite: "strict",
+      secure: true,
+      sameSite: "none",
     });
 
     const safeUser = {
@@ -68,7 +68,7 @@ router.get(
     };
 
     res.redirect(
-      `http://localhost:5173/oauth-success?accessToken=${accessToken}&user=${encodeURIComponent(
+      `${process.env.CLIENT_URL}/oauth-success?accessToken=${accessToken}&user=${encodeURIComponent(
         JSON.stringify(safeUser)
       )}`
     );

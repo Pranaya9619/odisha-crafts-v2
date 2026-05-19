@@ -104,7 +104,7 @@ router.get(
 
       // ✅ FIXED
       failureRedirect:
-        "http://localhost:5173/seller/login",
+        `${process.env.CLIENT_URL}/seller/login`,
     }
   ),
 
@@ -125,7 +125,7 @@ router.get(
     );
 
     res.redirect(
-      `http://localhost:5173/seller/oauth-success?token=${token}`
+      `${process.env.CLIENT_URL}/seller/oauth-success?token=${token}`
     );
 
   }

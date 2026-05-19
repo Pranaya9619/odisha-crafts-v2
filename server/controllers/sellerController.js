@@ -176,7 +176,7 @@ exports.verifySellerOTP = async (
       token,
       {
         httpOnly: true,
-        secure: false,
+        secure: process.env.NODE_ENV === "production",
         sameSite: "lax",
         maxAge:
           7 *
@@ -283,7 +283,7 @@ exports.loginSeller = async (
       token,
       {
         httpOnly: true,
-        secure: false,
+        secure: process.env.NODE_ENV === "production",
         sameSite: "lax",
         maxAge:
           7 *

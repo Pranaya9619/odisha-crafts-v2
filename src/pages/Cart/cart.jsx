@@ -97,7 +97,7 @@ const Cart = () => {
 
   const applyCoupon = async () => {
     try {
-      const res = await fetch("http://localhost:5000/api/coupons/validate", {
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/coupons/validate`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ code: couponCode }),
@@ -134,21 +134,23 @@ const Cart = () => {
         type: "error",
         text: "Please verify your email before checkout.",
       });
-      return;
 
-      if (!defaultAddress) {
-        setOrderMessage({
-          type: "error",
-          text: "Please add a default address before checkout.",
-        });
-        return;
-      }
+      return;
+    }
+
+    if (!defaultAddress) {
+      setOrderMessage({
+        type: "error",
+        text: "Please add a default address before checkout.",
+      });
+
+      return;
     }
 
     try {
       setLoading(true);
 
-      const { data } = await API.post("/orders/create", {
+      const { data } = await API.post(`${import.meta.env.VITE_API_BASE_URL}/api/orders/create`, {
         paymentMethod,
         couponCode,
         addressId: selectedAddressId,
@@ -172,7 +174,7 @@ const Cart = () => {
         order_id: data.razorpayOrderId,
 
         handler: async function (response) {
-          await API.post("/orders/verify", response);
+          await API.post(`${import.meta.env.VITE_API_BASE_URL}/api/orders/verify`, response);
 
           await fetchCart();
 

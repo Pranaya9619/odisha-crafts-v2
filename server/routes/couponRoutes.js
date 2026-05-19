@@ -3,18 +3,30 @@ const router = express.Router();
 const Coupon = require("../models/Coupon");
 
 router.post("/validate", async (req, res) => {
-  const { code } = req.body;
+  try {
 
-  const coupon = await Coupon.findOne({
-    code: code.toUpperCase(),
-    active: true,
-  });
+    const { code } = req.body;
 
-  if (!coupon) {
-    return res.status(400).json({ message: "Invalid coupon" });
+    const coupon = await Coupon.findOne({
+      code: code.toUpperCase(),
+      active: true,
+    });
+
+    if (!coupon) {
+      return res.status(400).json({
+        message: "Invalid coupon",
+      });
+    }
+
+    res.json(coupon);
+
+  } catch (err) {
+
+    res.status(500).json({
+      message: "Server error",
+    });
+
   }
-
-  res.json(coupon);
 });
 
 module.exports = router;

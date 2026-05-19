@@ -232,6 +232,12 @@ exports.verifyPayment = async (req, res) => {
 
     const order = await Order.findOne({ razorpayOrderId: razorpay_order_id });
 
+    if (!order) {
+      return res.status(404).json({
+        message: "Order not found",
+      });
+    }
+
     order.paymentStatus = "paid";
     order.razorpayPaymentId = razorpay_payment_id;
 
